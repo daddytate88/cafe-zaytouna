@@ -189,20 +189,38 @@ def asset(cur, name):
         return _data_cache[name]
     return rel(cur, "assets/" + name)
 
-def img(cur, key, lang, sizes="100vw", eager=False, cls="", style="", alt=None, large=True, parallax=None):
+def _desk(sizes):
+    last = sizes.split(",")[-1].strip()
+    return last if last.endswith(("px", "vw")) else "520px"
+
+def picture(cur, base, widths, sizes, attrs):
+    """<picture> with AVIF first, WebP fallback. base = 'img/coin-salon' (files base-480.avif ...)."""
+    av = ", ".join(f"{asset(cur, f'{base}-{w}.avif')} {w}w" for w in widths)
+    wb = ", ".join(f"{asset(cur, f'{base}-{w}.webp')} {w}w" for w in widths)
+    mid = widths[len(widths) // 2]
+    return (f'<picture><source type="image/avif" srcset="{av}" sizes="{sizes}">'
+            f'<img src="{asset(cur, f"{base}-{mid}.webp")}" srcset="{wb}" sizes="{sizes}" {attrs}></picture>')
+
+def img(cur, key, lang, sizes="100vw", eager=False, cls="", style="", alt=None, large=True, small=False):
     w, h, afr, aen = PHOTOS[key]
     a = alt if alt is not None else (afr if lang == "fr" else aen)
     attrs = [f'width="{w}" height="{h}"', f'alt="{E(a)}"']
-    if eager: attrs.append('fetchpriority="high"')
-    else: attrs.append('loading="lazy" decoding="async"')
+    if eager: attrs.append('fetchpriority="high" decoding="async"')
+    else: attrs.append('loading="lazy" decoding="async" fetchpriority="low"')
     if cls: attrs.append(f'class="{cls}"')
     if style: attrs.append(f'style="{style}"')
-    if parallax: attrs.append(f'data-parallax="{parallax}"')
     if PREVIEW:
         src = asset(cur, f"{key}.webp" if large else f"{key}-sm.webp")
         return f'<img src="{src}" {" ".join(attrs)}>'
-    return (f'<img src="{asset(cur, key + ".webp")}" srcset="{asset(cur, key + "-sm.webp")} 640w, {asset(cur, key + ".webp")} 1100w" '
-            f'sizes="{sizes}" {" ".join(attrs)}>')
+    # Phones get ~2.2x density (sharp, but far lighter than full 3x files)
+    sz = "180px" if small else f"(max-width: 600px) 260px, (max-width: 960px) 420px, {_desk(sizes)}"
+    return picture(cur, f"img/{key}", (480, 800, 1100), sz, " ".join(attrs))
+
+def logo_img(cur, px, cls, alt, lazy=False):
+    if PREVIEW:
+        return f'<img class="{cls}" src="{asset(cur, "logo-zaytouna-192.png")}" width="{px}" height="{px}" alt="{alt}">'
+    lz = ' loading="lazy"' if lazy else ""
+    return picture(cur, "img/logo", (104, 232), f"{px}px", f'class="{cls}" width="{px}" height="{px}" alt="{alt}" decoding="async"{lz}')
 
 ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
 STAR_PATH = "M12 2.8l2.8 5.7 6.3.9-4.5 4.4 1.1 6.2L12 17l-5.7 3 1.1-6.2L2.9 9.4l6.3-.9z"
@@ -255,7 +273,7 @@ T = {
 def business_ld():
     return {
       "@type": "CafeOrCoffeeShop", "@id": SITE_URL + "/#cafe", "name": NAME, "url": SITE_URL + "/",
-      "image": SITE_URL + "/assets/coin-salon.webp", "logo": SITE_URL + "/assets/logo-zaytouna-512.png",
+      "image": SITE_URL + "/assets/img/coin-salon-1100.webp", "logo": SITE_URL + "/assets/logo-zaytouna-512.png",
       "telephone": PHONE_E164, "priceRange": "$",
       "address": {"@type": "PostalAddress", "streetAddress": "8762 Rue Lajeunesse", "addressLocality": "Montréal",
                   "addressRegion": "QC", "postalCode": "H2M 1R6", "addressCountry": "CA"},
@@ -315,12 +333,13 @@ SPEC = ('<script type="speculationrules">' + json.dumps({"prerender": [
     {"where": {"and": [{"href_matches": "/*"}, {"not": {"selector_matches": "[target=_blank]"}}]}, "eagerness": "moderate"}]}) + "</script>")
 
 def lcp_preload(cur, key):
-    """Start downloading the main hero photo right away."""
+    """Start downloading the main hero photo right away (AVIF, same choice the page will make)."""
     if PREVIEW: return ""
-    photo = {"home": "coin-salon", "cafe": "coin-salon"}.get(key) or (ITEM[key[5:]].get("photo") if key.startswith("item:") else None)
+    photo = {"home": "coin-salon"}.get(key) or (ITEM[key[5:]].get("photo") if key.startswith("item:") else None)
     if not photo: return ""
-    return (f'\n<link rel="preload" as="image" href="{asset(cur, photo + ".webp")}" imagesrcset="{asset(cur, photo + "-sm.webp")} 640w, '
-            f'{asset(cur, photo + ".webp")} 1100w" imagesizes="(max-width: 960px) 92vw, 520px" fetchpriority="high">')
+    srcset = ", ".join(f"{asset(cur, f'img/{photo}-{w}.avif')} {w}w" for w in (480, 800, 1100))
+    return (f'\n<link rel="preload" as="image" type="image/avif" imagesrcset="{srcset}" '
+            f'imagesizes="(max-width: 600px) 260px, (max-width: 960px) 420px, 520px" fetchpriority="high">')
 
 def layout(cur, key, lang, title, desc, body, ld_extra=(), og_image=None, active=None, robots="index,follow,max-image-preview:large"):
     og_image = og_image or OG.get(key, "og-home")
@@ -365,14 +384,14 @@ def layout(cur, key, lang, title, desc, body, ld_extra=(), og_image=None, active
 <meta name="theme-color" content="#183F1B">
 {icons}
 <script type="application/ld+json">{json.dumps(graph, ensure_ascii=False)}</script>
-{'' if PREVIEW else SPEC}{lcp_preload(cur, key)}
+{lcp_preload(cur, key)}
 {style}"""
     order_btn = f'<a class="btn btn--order-desktop" href="{ORDER_URL}" target="_blank" rel="noopener">{t["order"]}</a>'
     body_html = f"""<a class="skip" href="#main">{t['skip']}</a>
 <header class="header" id="top">
   <div class="wrap header__in">
     <a class="brand" href="{rel(cur, PAGES['home'][lang])}" aria-label="{NAME} — {t['home']}">
-      <img src="{logo}" width="52" height="52" alt="{t['logo_alt']}"><span><small>Café</small>Zaytouna</span>
+      {logo_img(cur, 52, 'brand__logo', t['logo_alt'])}<span><small>Café</small>Zaytouna</span>
     </a>
     <nav class="nav" aria-label="{'Navigation principale' if lang == 'fr' else 'Main navigation'}">{navs}</nav>
     <div class="header__actions">
@@ -397,10 +416,15 @@ def layout(cur, key, lang, title, desc, body, ld_extra=(), og_image=None, active
 {script}"""
     return head, body_html
 
+def final_bg(cur):
+    if PREVIEW: return img(cur, 'facade-soir', 'fr', alt='', large=False)
+    return (f'<picture><source type="image/avif" srcset="{asset(cur, "img/final-bg.avif")}">'
+            f'<img src="{asset(cur, "img/final-bg.webp")}" width="560" height="747" alt="" loading="lazy" decoding="async" fetchpriority="low"></picture>')
+
 def final_cta(cur, lang):
     t = T[lang]
     return f"""<section class="final on-band" id="commander" aria-labelledby="final-title">
-  <div class="final__bg" aria-hidden="true">{img(cur, 'facade-soir', lang, alt='', large=False)}</div>
+  <div class="final__bg" aria-hidden="true">{final_bg(cur)}</div>
   <div class="wrap"><div class="final__in reveal">
     <div class="kilim" aria-hidden="true" style="width:160px"></div>
     <h2 id="final-title">{t['final_t']}</h2><p>{t['final_d']}</p>
@@ -420,7 +444,7 @@ def footer(cur, lang):
     navs = "".join(f'<li><a href="{rel(cur, PAGES[k][lang])}">{t[k]}</a></li>' for k in ("home", "menu", "cafe", "reviews", "visit"))
     return f"""<footer class="footer"><div class="wrap">
   <div class="footer__grid">
-    <div class="footer__brand"><img class="footer__logo" src="{asset(cur, 'logo-zaytouna-192.png')}" width="116" height="116" loading="lazy" alt="{t['logo_alt']}"></div>
+    <div class="footer__brand">{logo_img(cur, 116, 'footer__logo', t['logo_alt'], lazy=True)}</div>
     <div><h3>{t['address']}</h3><address>{t['addr_html']}</address>
       <p style="margin-top:.6rem"><a class="tel" href="tel:{PHONE_E164}">{PHONE[lang]}</a></p>
       <p style="margin-top:.6rem"><a class="link" href="{rel(cur, PAGES['visit'][lang])}">{t['directions']}</a></p></div>
@@ -464,7 +488,7 @@ def page_home(lang):
   </div>
   <div class="hero__media">
     <div class="arch">{img(cur, 'coin-salon', lang, '(max-width: 960px) 92vw, 520px', eager=True)}</div>
-    <div class="ring">{img(cur, 'matcha-creme-brulee', lang, '220px', eager=True, large=False)}</div>
+    <div class="ring">{img(cur, 'matcha-creme-brulee', lang, '220px', large=False, small=True)}</div>
     <p class="hero__note" aria-hidden="true"><b>Zaytouna</b><span>{'« olive », en arabe' if fr else '“olive” in Arabic'}</span></p>
   </div>
 </div></section>
@@ -626,7 +650,7 @@ def page_item(i, lang):
     desc = fit(base + tail) if len(base + tail) <= 160 else fit(base)
     mi = {"@type": "MenuItem", "name": nm, "description": d, "url": absurl(cur),
           "offers": {"@type": "Offer", "price": f"{i['price']:.2f}", "priceCurrency": "CAD", "url": ORDER_URL}}
-    if i.get("photo"): mi["image"] = SITE_URL + f"/assets/{i['photo']}.webp"
+    if i.get("photo"): mi["image"] = SITE_URL + f"/assets/img/{i['photo']}-1100.webp"
     return cur, layout(cur, key, lang, title, desc, body, [mi, breadcrumb_ld(trail)], og_image=og, active="menu")
 
 def page_cafe(lang):
@@ -763,6 +787,16 @@ def page_404():
     head, html_body = layout(cur, "home", "fr", f"Page introuvable · {NAME}", "Page introuvable.", body, robots="noindex,follow")
     return head.replace(f'<link rel="canonical" href="{absurl("index.html")}">', ""), html_body
 
+def min_css(css):
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    css = re.sub(r"\s+", " ", css)
+    css = re.sub(r"\s*([{};,>])\s*", r"\1", css)
+    css = re.sub(r";}", "}", css)
+    return css.strip()
+
+def min_html(doc):
+    return re.sub(r"\s*\n\s*", " ", doc).replace("> <head>", "><head>")
+
 # Move inline style="" attributes into classes so the strict CSP (style-src 'self') holds.
 UTIL = {}
 TAG_RE = re.compile(r'<([a-zA-Z][\w-]*)((?:\s[^<>]*?)?)\sstyle="([^"]*)"([^<>]*)>')
@@ -842,7 +876,7 @@ def main():
         lang = "en-CA" if path.startswith("en/") else "fr-CA"
         doc = (f'<!doctype html>\n<html lang="{lang}">\n<head>\n<meta charset="utf-8">\n'
                f'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n{head}\n</head>\n<body>\n{body}\n</body>\n</html>\n')
-        if not PREVIEW: doc = strip_styles(doc)
+        if not PREVIEW: doc = min_html(strip_styles(doc))
         if path == "404.html":  # served at any URL, so make every local link absolute
             doc = re.sub(r'(href|src)="(?!https?:|/|#|tel:|data:|mailto:)', r'\1="/', doc)
             doc = re.sub(r'srcset="([^"]*)"', lambda m: 'srcset="' + re.sub(r'(^|, )(?!/)', r'\1/', m.group(1)) + '"', doc)
@@ -851,7 +885,7 @@ def main():
             (OUT / "_main.html").write_text(f"{head}\n{body}\n", encoding="utf-8")
     if not PREVIEW:
         shutil.copytree(ROOT / "assets", OUT / "assets")
-        (OUT / "styles.css").write_text(CSS + util_css(), encoding="utf-8")
+        (OUT / "styles.css").write_text(min_css(CSS + util_css()), encoding="utf-8")
         shutil.copy(ROOT / "assets/favicon.ico", OUT / "favicon.ico")
         (OUT / "site.webmanifest").write_text(json.dumps({"name": NAME, "short_name": "Zaytouna", "lang": "fr-CA", "start_url": "/index.html",
             "display": "browser", "background_color": "#F5F6F0", "theme_color": "#183F1B",
@@ -862,8 +896,8 @@ def main():
         urls = []; today = datetime.date.today().isoformat()
         for key, langs in PAGES.items():
             alts = "".join(f'<xhtml:link rel="alternate" hreflang="{h}" href="{absurl(langs[l])}"/>' for h, l in (("fr-CA", "fr"), ("en-CA", "en"), ("x-default", "fr")))
-            imgs = sorted(set(re.findall(r'assets/([\w-]+)\.webp"', (OUT / langs["fr"]).read_text(encoding="utf-8"))))
-            imgx = "".join(f"<image:image><image:loc>{SITE_URL}/assets/{n}.webp</image:loc></image:image>" for n in imgs if not n.endswith("-sm"))
+            imgs = sorted(set(re.findall(r'assets/img/([a-z-]+?)-1100\.webp', (OUT / langs["fr"]).read_text(encoding="utf-8"))))
+            imgx = "".join(f"<image:image><image:loc>{SITE_URL}/assets/img/{n}-1100.webp</image:loc></image:image>" for n in imgs)
             pri = "1.0" if key == "home" else ("0.9" if key in ("menu", "visit") else ("0.3" if key in ("privacy", "terms") else "0.7"))
             for l in ("fr", "en"):
                 urls.append(f"<url><loc>{absurl(langs[l])}</loc><lastmod>{today}</lastmod><priority>{pri}</priority>{alts}{imgx}</url>")

@@ -89,20 +89,37 @@
     reveals.forEach(function (el) { io.observe(el); });
   } else reveals.forEach(function (el) { el.classList.add('is-in'); });
 
-  // Warm up the next page as soon as a link is touched or hovered (instant language switch)
+  // Instant next page: once this page has fully loaded, let the browser prepare
+  // the other-language page (and any link you touch) in the background.
+  var specOK = window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules');
   var warmed = {};
-  function warm(e) {
-    var a = e.target.closest && e.target.closest('a[href]');
+  function warm(a) {
     if (!a || a.target === '_blank' || a.origin !== location.origin || warmed[a.pathname]) return;
     warmed[a.pathname] = 1;
-    try { fetch(a.href, { credentials: 'same-origin', priority: 'high' }).catch(function () {}); } catch (err) {}
+    try { fetch(a.href, { credentials: 'same-origin' }).catch(function () {}); } catch (err) {}
   }
-  document.addEventListener('pointerover', warm, { passive: true });
-  document.addEventListener('touchstart', warm, { passive: true });
-  document.addEventListener('focusin', warm);
-  var alt = document.querySelector('.langs a[href]');
-  if (alt && 'requestIdleCallback' in window) requestIdleCallback(function () { warm({ target: alt }); });
-  else if (alt) setTimeout(function () { warm({ target: alt }); }, 1500);
+  function afterLoad(fn) {
+    var go = function () { ('requestIdleCallback' in window) ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 600); };
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
+  }
+  afterLoad(function () {
+    if (specOK) {
+      var s = document.createElement('script');
+      s.type = 'speculationrules';
+      s.textContent = JSON.stringify({ prerender: [
+        { where: { selector_matches: '.langs a' }, eagerness: 'eager' },
+        { where: { and: [{ href_matches: '/*' }, { not: { selector_matches: '[target=_blank]' } }] }, eagerness: 'moderate' }
+      ] });
+      document.head.appendChild(s);
+    } else {
+      warm(document.querySelector('.langs a[href]'));
+    }
+  });
+  if (!specOK) {
+    var onIntent = function (e) { warm(e.target.closest && e.target.closest('a[href]')); };
+    document.addEventListener('touchstart', onIntent, { passive: true });
+    document.addEventListener('pointerover', onIntent, { passive: true });
+  }
 
   // Mobile sticky "Commander": after the page's main buttons scroll away; hidden over the map and the final order section
   var bar = document.getElementById('order-bar');

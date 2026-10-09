@@ -168,3 +168,5 @@ a.lang{display:inline-grid;place-items:center;text-decoration:none}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.18s}
 @media (prefers-reduced-motion: reduce){@view-transition{navigation:none}}
 @media (max-width: 960px){.js .reveal{transform:none}}
+
+picture{display:contents}
