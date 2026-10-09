@@ -73,7 +73,11 @@
 
   // Header border once scrolled
   var header = document.querySelector('.header');
-  var onScrollHeader = function () { if (header) header.classList.toggle('is-scrolled', window.scrollY > 8); };
+  var scrolled = null, hTick = false;
+  var onScrollHeader = function () {
+    if (hTick) return; hTick = true;
+    requestAnimationFrame(function () { hTick = false; var s = window.scrollY > 8; if (s !== scrolled && header) { scrolled = s; header.classList.toggle('is-scrolled', s); } });
+  };
   onScrollHeader(); window.addEventListener('scroll', onScrollHeader, { passive: true });
 
   // Reveal on scroll (content stays readable before it settles)
@@ -85,24 +89,20 @@
     reveals.forEach(function (el) { io.observe(el); });
   } else reveals.forEach(function (el) { el.classList.add('is-in'); });
 
-  // Gentle parallax
-  var par = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
-  var ticking = false;
-  function parallax() {
-    ticking = false;
-    if (reduce.matches) return;
-    par.forEach(function (img) {
-      var r = img.parentElement.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > innerHeight) return;
-      var p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
-      img.style.transform = 'translate3d(0,' + (-p * parseFloat(img.dataset.parallax) * 100 - 5).toFixed(2) + '%,0)';
-      img.style.height = '112%';
-    });
+  // Warm up the next page as soon as a link is touched or hovered (instant language switch)
+  var warmed = {};
+  function warm(e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.origin !== location.origin || warmed[a.pathname]) return;
+    warmed[a.pathname] = 1;
+    try { fetch(a.href, { credentials: 'same-origin', priority: 'high' }).catch(function () {}); } catch (err) {}
   }
-  if (par.length) {
-    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(parallax); } }, { passive: true });
-    parallax();
-  }
+  document.addEventListener('pointerover', warm, { passive: true });
+  document.addEventListener('touchstart', warm, { passive: true });
+  document.addEventListener('focusin', warm);
+  var alt = document.querySelector('.langs a[href]');
+  if (alt && 'requestIdleCallback' in window) requestIdleCallback(function () { warm({ target: alt }); });
+  else if (alt) setTimeout(function () { warm({ target: alt }); }, 1500);
 
   // Mobile sticky "Commander": after the page's main buttons scroll away; hidden over the map and the final order section
   var bar = document.getElementById('order-bar');

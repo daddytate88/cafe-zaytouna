@@ -162,3 +162,9 @@ a.lang{display:inline-grid;place-items:center;text-decoration:none}
 .langs a:hover{color:var(--ink);background:var(--paper-2)}
 .mobile-nav .mobile-nav__lang a{font-family:var(--f-body);font-size:1rem;font-weight:600;color:var(--leaf)}
 @media (max-width: 380px){.langs a,.langs span{min-width:32px;padding-inline:.4rem}}
+
+/* smooth page-to-page and language switching (Chrome, Edge, Safari 18+) */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.18s}
+@media (prefers-reduced-motion: reduce){@view-transition{navigation:none}}
+@media (max-width: 960px){.js .reveal{transform:none}}

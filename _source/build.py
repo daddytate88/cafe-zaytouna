@@ -304,11 +304,23 @@ def font_url(name):
 FONT_CSS = (f'@font-face{{font-family:"Marcellus";font-style:normal;font-weight:400;font-display:swap;src:url("{font_url("marcellus-latin.woff")}") format("woff")}}'
             f'@font-face{{font-family:"Figtree";font-style:normal;font-weight:400 700;font-display:swap;src:url("{font_url("figtree-latin-var.woff")}") format("woff")}}\n')
 CSS = FONT_CSS + (ROOT / "base.css").read_text(encoding="utf-8") + (ROOT / "extra.css").read_text(encoding="utf-8")
-CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; "
+CSP = ("default-src 'none'; script-src 'self' 'inline-speculation-rules'; style-src 'self'; img-src 'self' data:; font-src 'self'; "
        "frame-src https://www.google.com; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; "
        "object-src 'none'; upgrade-insecure-requests")
 OG = {"home": "og-home", "menu": "og-salle", "cafe": "og-home", "reviews": "og-latte", "visit": "og-facade", "privacy": "og-home", "terms": "og-home"}
 JS = (ROOT / "site.js").read_text(encoding="utf-8")
+
+SPEC = ('<script type="speculationrules">' + json.dumps({"prerender": [
+    {"where": {"selector_matches": ".langs a"}, "eagerness": "eager"},
+    {"where": {"and": [{"href_matches": "/*"}, {"not": {"selector_matches": "[target=_blank]"}}]}, "eagerness": "moderate"}]}) + "</script>")
+
+def lcp_preload(cur, key):
+    """Start downloading the main hero photo right away."""
+    if PREVIEW: return ""
+    photo = {"home": "coin-salon", "cafe": "coin-salon"}.get(key) or (ITEM[key[5:]].get("photo") if key.startswith("item:") else None)
+    if not photo: return ""
+    return (f'\n<link rel="preload" as="image" href="{asset(cur, photo + ".webp")}" imagesrcset="{asset(cur, photo + "-sm.webp")} 640w, '
+            f'{asset(cur, photo + ".webp")} 1100w" imagesizes="(max-width: 960px) 92vw, 520px" fetchpriority="high">')
 
 def layout(cur, key, lang, title, desc, body, ld_extra=(), og_image=None, active=None, robots="index,follow,max-image-preview:large"):
     og_image = og_image or OG.get(key, "og-home")
@@ -353,6 +365,7 @@ def layout(cur, key, lang, title, desc, body, ld_extra=(), og_image=None, active
 <meta name="theme-color" content="#183F1B">
 {icons}
 <script type="application/ld+json">{json.dumps(graph, ensure_ascii=False)}</script>
+{'' if PREVIEW else SPEC}{lcp_preload(cur, key)}
 {style}"""
     order_btn = f'<a class="btn btn--order-desktop" href="{ORDER_URL}" target="_blank" rel="noopener">{t["order"]}</a>'
     body_html = f"""<a class="skip" href="#main">{t['skip']}</a>
@@ -450,7 +463,7 @@ def page_home(lang):
     <a class="rating" href="{rel(cur, PAGES['reviews'][lang])}"><span class="rating__g" aria-hidden="true">G</span>{stars()}<span class="rating__txt">{rating_text(lang)}</span></a>
   </div>
   <div class="hero__media">
-    <div class="arch">{img(cur, 'coin-salon', lang, '(max-width: 960px) 92vw, 520px', eager=True, parallax='0.06')}</div>
+    <div class="arch">{img(cur, 'coin-salon', lang, '(max-width: 960px) 92vw, 520px', eager=True)}</div>
     <div class="ring">{img(cur, 'matcha-creme-brulee', lang, '220px', eager=True, large=False)}</div>
     <p class="hero__note" aria-hidden="true"><b>Zaytouna</b><span>{'« olive », en arabe' if fr else '“olive” in Arabic'}</span></p>
   </div>
@@ -473,7 +486,7 @@ def page_home(lang):
 </div></section>
 
 <section class="section exp" aria-labelledby="cafe-title"><div class="wrap split">
-  <div class="split__img reveal">{img(cur, 'salle', lang, '(max-width: 960px) 92vw, 50vw', parallax='0.04')}</div>
+  <div class="split__img reveal">{img(cur, 'salle', lang, '(max-width: 960px) 92vw, 50vw')}</div>
   <div class="split__text reveal"><span class="eyebrow">{t['cafe']}</span>
     <h2 id="cafe-title">{'Venez découvrir Café Zaytouna' if fr else 'Come discover Café Zaytouna'}</h2>
     <p>{'Un olivier dans le coin de la salle, des banquettes basses vertes aux motifs tissés, des tables en bois clair et une vitrine de pâtisseries au comptoir.' if fr else 'An olive tree in the corner, low green floor seating with woven patterns, light wood tables and a pastry display at the counter.'}</p>
@@ -632,7 +645,7 @@ def page_cafe(lang):
   <div class="page-hero__side">{btn(rel(cur, PAGES['visit'][lang]), t['directions'], 'btn btn--lg', ext=False)}</div>
 </div></section>
 <div class="wrap"><div class="gallery">
-  <figure class="g1 reveal"><div class="g-img">{img(cur, 'coin-salon', lang, '(max-width: 600px) 46vw, 50vw', eager=True, parallax='0.04')}</div><figcaption>{'Le coin salon et son olivier' if fr else 'The lounge corner and its olive tree'}</figcaption></figure>
+  <figure class="g1 reveal"><div class="g-img">{img(cur, 'coin-salon', lang, '(max-width: 600px) 46vw, 50vw', eager=True)}</div><figcaption>{'Le coin salon et son olivier' if fr else 'The lounge corner and its olive tree'}</figcaption></figure>
   <figure class="g2 reveal"><div class="g-img">{img(cur, 'salle', lang, '(max-width: 600px) 46vw, 50vw', eager=True)}</div><figcaption>{'La salle' if fr else 'The dining room'}</figcaption></figure>
   <figure class="g3 reveal"><div class="g-img">{img(cur, 'comptoir', lang, '33vw', large=False)}</div><figcaption>{'Le comptoir' if fr else 'The counter'}</figcaption></figure>
   <figure class="g4 reveal"><div class="g-img">{img(cur, 'facade-soir', lang, '33vw', large=False)}</div><figcaption>{'La terrasse, le soir' if fr else 'The terrace at night'}</figcaption></figure>
