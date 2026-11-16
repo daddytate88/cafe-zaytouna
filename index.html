@@ -1096,6 +1096,83 @@ body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:152px}
   body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:140px}
 }
 @media (prefers-reduced-motion:reduce){ .wa-cta{transition:none} }
+
+/* =====================================================================
+   ONE QUESTION AT A TIME
+   The whole form still exists in the DOM — the controller shows one
+   group at a time, so the payload and validation paths are unchanged.
+   ===================================================================== */
+.event-form.stepped .ff-row{display:block;margin:0}
+.event-form.stepped .ff{display:none}
+.event-form.stepped .ff.on{display:block}
+.sf-shell{max-width:560px;margin:0 auto}
+.sf-prog{height:3px;background:var(--lilac-soft,#EAE6EC);border-radius:3px;overflow:hidden;margin-bottom:9px}
+.sf-prog i{display:block;height:100%;width:0;border-radius:3px;
+  background:linear-gradient(90deg,var(--violet),var(--sage));
+  transition:width .55s cubic-bezier(.16,1,.3,1)}
+.sf-count{font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted,#7A6B8C);margin-bottom:22px;font-variant-numeric:tabular-nums}
+.sf-step{display:none}
+.sf-step.on{display:block;animation:sfIn .5s cubic-bezier(.16,1,.3,1)}
+@keyframes sfIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sf-q{font-family:var(--serif,'Cormorant Garamond',Georgia,serif);font-size:30px;line-height:1.2;
+  color:var(--violet);font-weight:600;margin:0 0 7px}
+.sf-sub{font-size:14px;color:var(--muted,#7A6B8C);margin:0 0 22px;line-height:1.6}
+.sf-opts{display:grid;gap:10px;margin-bottom:6px}
+.sf-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:16px 18px;border:1px solid var(--lilac,#D3C7DB);border-radius:12px;
+  background:var(--white,#FDFBF7);font-size:15.5px;color:var(--ink,#241733);cursor:pointer;
+  transition:border-color .22s,background .22s,transform .22s cubic-bezier(.34,1.42,.64,1),
+             box-shadow .22s}
+.sf-opt:hover{border-color:var(--sage,#A98FC0);background:var(--lilac-mist,#F4F1F6)}
+.sf-opt:active{transform:scale(.985)}
+.sf-opt[aria-pressed="true"]{border-color:var(--violet);background:var(--lilac-soft,#EAE6EC);
+  box-shadow:0 0 0 1px var(--violet) inset;font-weight:600}
+.sf-opt .tick{margin-left:auto;opacity:0;color:var(--violet);font-size:15px;transition:opacity .2s}
+.sf-opt[aria-pressed="true"] .tick{opacity:1}
+.sf-opts.two{grid-template-columns:1fr 1fr}
+@media(max-width:520px){.sf-opts.two{grid-template-columns:1fr}}
+.sf-nav{display:flex;gap:10px;align-items:center;margin-top:26px;flex-wrap:wrap}
+.sf-nav .sf-spacer{flex:1}
+.sf-back{background:none;border:0;color:var(--muted,#7A6B8C);font-size:14px;cursor:pointer;
+  padding:10px 2px;transition:color .2s}
+.sf-back:hover{color:var(--violet)}
+.sf-skip{background:none;border:0;color:var(--muted,#7A6B8C);font-size:13.5px;
+  text-decoration:underline;cursor:pointer;padding:10px 4px}
+.sf-err{color:#9B3B3B;font-size:13px;margin-top:9px;display:none}
+.sf-err.on{display:block;animation:sfShake .4s}
+@keyframes sfShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}
+  75%{transform:translateX(5px)}}
+.event-form.stepped .ff input,.event-form.stepped .ff select,
+.event-form.stepped .ff textarea{font-size:16px;padding:14px 15px}  /* 16px: iOS will not zoom */
+.event-form.stepped .ff label{font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.sf-sum{border:1px solid var(--lilac,#D3C7DB);border-radius:12px;overflow:hidden;
+  background:var(--white,#FDFBF7);margin-bottom:20px}
+.sf-sum .r{display:flex;gap:12px;align-items:baseline;padding:12px 16px;
+  border-bottom:1px solid var(--lilac-soft,#EAE6EC);font-size:14.5px}
+.sf-sum .r:last-child{border-bottom:0}
+.sf-sum .r b{flex:0 0 108px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted,#7A6B8C);font-weight:700}
+.sf-sum .r span{flex:1;color:var(--ink,#241733)}
+.sf-sum .r button{background:none;border:0;color:var(--sage-deep,#6F4E92);font-size:12.5px;
+  cursor:pointer;text-decoration:underline;padding:0}
+.sf-consent{display:flex;gap:11px;align-items:flex-start;padding:14px 16px;
+  background:var(--lilac-mist,#F4F1F6);border-radius:10px;margin-bottom:18px;
+  font-size:13.8px;line-height:1.55;cursor:pointer}
+.sf-consent input{margin-top:3px;width:18px;height:18px;flex:0 0 18px;accent-color:var(--violet)}
+.sf-consent small{display:block;color:var(--muted,#7A6B8C);font-size:12.3px;margin-top:3px}
+.sf-resume{font-size:13px;color:var(--sage-deep,#6F4E92);background:var(--lilac-mist,#F4F1F6);
+  border-radius:9px;padding:10px 13px;margin-bottom:16px;display:none}
+.sf-resume.on{display:block}
+@media(max-width:640px){
+  .sf-q{font-size:25px}
+  .sf-opt{padding:15px 16px;font-size:15px}
+  .sf-nav{position:sticky;bottom:0;background:linear-gradient(transparent,var(--ivory,#F7F3EB) 22%);
+    padding-top:14px;margin-top:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sf-step.on{animation:none}.sf-prog i{transition:none}.sf-err.on{animation:none}
+}
 </style>
 <meta property="og:title" content="Nathan Café Floral — Café, Floral Studio &amp; Private Event Venue, Montréal">
 <meta property="og:description" content="Specialty coffee café and private event venue at 1350 Mazurette, Ahuntsic-Cartierville, Montréal, near Marché Central. Intimate weddings, receptions and private parties for up to 50 guests, plus Saturday brunch by reservation.">
@@ -1745,6 +1822,45 @@ body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:152px}
 
 <script id="nf-i18n">
 window.NF_DICT = {
+  "step.of":{"en":"of","fr":"sur"},
+  "step.back":{"en":"Back","fr":"Retour"},
+  "step.next":{"en":"Continue","fr":"Continuer"},
+  "step.skip":{"en":"Skip","fr":"Passer"},
+  "step.send":{"en":"Send my enquiry","fr":"Envoyer ma demande"},
+  "step.edit":{"en":"Edit","fr":"Modifier"},
+  "step.q1":{"en":"What are you planning?","fr":"Que planifiez-vous?"},
+  "step.q1s":{"en":"Pick the closest one — we will sort out the details together.","fr":"Choisissez le plus proche — nous verrons les détails ensemble."},
+  "step.q2":{"en":"When would you like it to be?","fr":"Quand aimeriez-vous le tenir?"},
+  "step.q2s":{"en":"An approximate date is fine.","fr":"Une date approximative suffit."},
+  "step.flex":{"en":"Is that date flexible?","fr":"Cette date est-elle flexible?"},
+  "step.flex.yes":{"en":"Yes, flexible","fr":"Oui, flexible"},
+  "step.flex.no":{"en":"No, that date","fr":"Non, cette date"},
+  "step.flex.maybe":{"en":"Still deciding","fr":"À déterminer"},
+  "step.q3":{"en":"Roughly how many guests?","fr":"Combien d'invités environ?"},
+  "step.q3s":{"en":"The room seats up to 50. An estimate is fine.","fr":"La salle accueille jusqu'à 50 personnes. Une estimation suffit."},
+  "step.q4":{"en":"What budget do you have in mind?","fr":"Quel budget avez-vous en tête?"},
+  "step.q5":{"en":"What is your name?","fr":"Quel est votre nom?"},
+  "step.q6":{"en":"Where can we reach you?","fr":"Où pouvons-nous vous joindre?"},
+  "step.q6s":{"en":"She replies personally, usually the same day.","fr":"Elle répond personnellement, généralement le jour même."},
+  "step.q7":{"en":"Anything else we should know?","fr":"Autre chose à savoir?"},
+  "step.q7s":{"en":"Optional — skip it if you would rather talk it through.","fr":"Optionnel — passez si vous préférez en parler."},
+  "step.q8":{"en":"Does this look right?","fr":"Est-ce exact?"},
+  "step.q8s":{"en":"Change anything before you send it.","fr":"Modifiez ce que vous voulez avant d'envoyer."},
+  "step.wa":{"en":"You may contact me on WhatsApp about this enquiry.","fr":"Vous pouvez me contacter sur WhatsApp au sujet de cette demande."},
+  "step.wa.note":{"en":"Optional. We will email you either way.","fr":"Optionnel. Nous vous écrirons par courriel dans tous les cas."},
+  "step.g1":{"en":"Up to 20","fr":"Jusqu'à 20"},
+  "step.g2":{"en":"20 – 35","fr":"20 à 35"},
+  "step.g3":{"en":"35 – 50","fr":"35 à 50"},
+  "step.g4":{"en":"More than 50","fr":"Plus de 50"},
+  "step.sum.type":{"en":"Occasion","fr":"Occasion"},
+  "step.sum.date":{"en":"Date","fr":"Date"},
+  "step.sum.guests":{"en":"Guests","fr":"Invités"},
+  "step.sum.budget":{"en":"Budget","fr":"Budget"},
+  "step.sum.name":{"en":"Name","fr":"Nom"},
+  "step.sum.email":{"en":"Email","fr":"Courriel"},
+  "step.sum.phone":{"en":"Phone","fr":"Téléphone"},
+  "step.sum.notes":{"en":"Notes","fr":"Notes"},
+  "step.resume":{"en":"We kept your answers. Carry on where you left off.","fr":"Nous avons gardé vos réponses. Reprenez où vous en étiez."},
   "wa.float":{"en":"WhatsApp","fr":"WhatsApp"},
   "wa.msg":{"en":"Hello! I would like to ask about Nathan Caf\u00e9 Floral.","fr":"Bonjour! J'aimerais avoir des informations sur Nathan Caf\u00e9 Floral."},
   "faq.eyebrow":{"en":"Good to know","fr":"Bon \u00e0 savoir"},
@@ -2433,7 +2549,8 @@ window.NCF_ENDPOINT = "";
   var MAP = {
     eventForm:  {name:'name', email:'email', phone:'phone', event_type:'type',
                  event_date:'date', guests:'guests', message:'details',
-                 budget_band:'budget'},
+                 budget_band:'budget', date_flexible:'date_flexible',
+                 wa_consent:'wa_consent'},
     brunchForm: {name:'bname', email:'bemail', phone:'bphone', event_date:'bdate',
                  seating:'bservice', guests:'bguests', message:'bnotes'}
   };
@@ -2453,7 +2570,14 @@ window.NCF_ENDPOINT = "";
       source:'website', form:formId, lang:lang(),
       name:out.name||'', email:out.email||'', phone:out.phone||'',
       event_type:out.event_type||'', event_date:out.event_date||'',
-      guests:out.guests, budget_band:out.budget_band||'', message:out.message||''
+      guests:out.guests, budget_band:out.budget_band||'',
+      date_flexible:out.date_flexible||'', message:out.message||'',
+      // consent is only sent when the box was actually ticked, with the
+      // exact wording the visitor saw
+      consent: out.wa_consent === 'yes' ? {
+        channel:'whatsapp', granted:true, version:'v1',
+        wording: (function(){ try { return NF_T('step.wa',''); } catch(e){ return ''; } })()
+      } : null
     };
   }
 
@@ -2532,6 +2656,309 @@ window.NCF_TESTIMONIALS = [
     return '<figure class="tm-card"><div class="tm-q">\u201C</div><p>'+
       String(q).replace(/[<>]/g,'')+'</p><b>'+String(t.who||'').replace(/[<>]/g,'')+'</b></figure>';
   }).join('');
+})();
+
+/* =====================================================================
+   STEPPED ENQUIRY CONTROLLER
+   Every question is one tap or one short answer. The occasion comes
+   first because it is a tap, and contact details come last, once
+   someone has already invested a few seconds. The underlying form,
+   its field names and the payload builder are untouched.
+   ===================================================================== */
+(function(){
+  var form = document.getElementById('eventForm');
+  if(!form) return;
+  var T = function(k,f){
+    try {
+      var d=window.NF_DICT||{}, lang=(document.documentElement.getAttribute('lang')||'en').slice(0,2);
+      if(d[k] && d[k][lang]) return d[k][lang];
+      if(d[k] && d[k].en) return d[k].en;
+      return f;
+    } catch(e){ return f; }
+  };
+
+  var STEPS = [
+    {id:'type',   q:'step.q1', sub:'step.q1s', field:'f-type',  kind:'choice', required:true},
+    {id:'date',   q:'step.q2', sub:'step.q2s', field:'f-date',  kind:'date',   required:true},
+    {id:'guests', q:'step.q3', sub:'step.q3s', field:'f-guests',kind:'guests', required:true},
+    {id:'budget', q:'step.q4', sub:null,       field:'f-budget',kind:'choice', required:false},
+    {id:'name',   q:'step.q5', sub:null,       field:'f-name',  kind:'text',   required:true},
+    {id:'contact',q:'step.q6', sub:'step.q6s', field:'f-email', kind:'contact',required:true},
+    {id:'notes',  q:'step.q7', sub:'step.q7s', field:'f-details',kind:'text',  required:false, skip:true},
+    {id:'review', q:'step.q8', sub:'step.q8s', field:null,      kind:'review'}
+  ];
+  var at = 0, flex = '', consent = false;
+  var KEY = 'ncf_form_progress';
+
+  form.classList.add('stepped');
+
+  /* The form's own submit button would let someone bypass the questions.
+     Hidden from JS rather than CSS, so it still works if this script
+     never runs. */
+  var realSubmit = form.querySelector('[type=submit]');
+  if(realSubmit) realSubmit.style.display = 'none';
+
+  /* ---- shell ---- */
+  var shell = document.createElement('div');
+  shell.className = 'sf-shell';
+  shell.innerHTML =
+    '<div class="sf-resume" id="sfResume"></div>' +
+    '<div class="sf-prog"><i id="sfBar"></i></div>' +
+    '<div class="sf-count" id="sfCount"></div>' +
+    '<div id="sfSteps"></div>';
+  form.insertBefore(shell, form.firstChild);
+  var host = document.getElementById('sfSteps');
+
+  /* move each real field into its step, so names and validation survive */
+  STEPS.forEach(function(st){
+    var box = document.createElement('div');
+    box.className = 'sf-step'; box.dataset.step = st.id;
+    box.innerHTML = '<h3 class="sf-q" data-i18n="'+st.q+'"></h3>' +
+      (st.sub ? '<p class="sf-sub" data-i18n="'+st.sub+'"></p>' : '') +
+      '<div class="sf-body"></div>' +
+      '<div class="sf-err" id="err-'+st.id+'"></div>' +
+      '<div class="sf-nav">' +
+        '<button type="button" class="sf-back" data-i18n="step.back"></button>' +
+        '<span class="sf-spacer"></span>' +
+        (st.skip ? '<button type="button" class="sf-skip" data-i18n="step.skip"></button>' : '') +
+        '<button type="button" class="btn btn-solid sf-next" data-i18n="'+
+          (st.kind==='review'?'step.send':'step.next')+'"></button>' +
+      '</div>';
+    host.appendChild(box);
+    var body = box.querySelector('.sf-body');
+
+    if(st.kind === 'choice'){
+      var sel = document.getElementById(st.field);
+      var opts = document.createElement('div');
+      opts.className = 'sf-opts';
+      Array.prototype.slice.call(sel.options).forEach(function(o){
+        if(!o.value) return;
+        var b = document.createElement('button');
+        b.type='button'; b.className='sf-opt'; b.setAttribute('aria-pressed','false');
+        b.dataset.val = o.value;
+        b.innerHTML = '<span data-i18n="'+(o.getAttribute('data-i18n')||'')+'">'+
+          o.textContent+'</span><span class="tick">✓</span>';
+        b.addEventListener('click', function(){
+          sel.value = o.value;
+          opts.querySelectorAll('.sf-opt').forEach(function(x){x.setAttribute('aria-pressed','false');});
+          b.setAttribute('aria-pressed','true');
+          hideErr(st.id); save();
+          setTimeout(function(){ go(at+1); }, 170);   // a tap is the answer
+        });
+        opts.appendChild(b);
+      });
+      body.appendChild(opts);
+      sel.closest('.ff').style.display='none';
+    }
+    else if(st.kind === 'guests'){
+      var inp = document.getElementById('f-guests');
+      var bands = [['step.g1','15'],['step.g2','28'],['step.g3','42'],['step.g4','60']];
+      var g = document.createElement('div'); g.className='sf-opts two';
+      bands.forEach(function(bd){
+        var b=document.createElement('button');
+        b.type='button'; b.className='sf-opt'; b.setAttribute('aria-pressed','false');
+        b.innerHTML='<span data-i18n="'+bd[0]+'"></span><span class="tick">✓</span>';
+        b.addEventListener('click',function(){
+          inp.value = bd[1];
+          g.querySelectorAll('.sf-opt').forEach(function(x){x.setAttribute('aria-pressed','false');});
+          b.setAttribute('aria-pressed','true'); hideErr(st.id); save();
+          setTimeout(function(){ go(at+1); },170);
+        });
+        g.appendChild(b);
+      });
+      body.appendChild(g);
+      body.appendChild(inp.closest('.ff'));
+      inp.closest('.ff').classList.add('on');
+    }
+    else if(st.kind === 'date'){
+      body.appendChild(document.getElementById('f-date').closest('.ff'));
+      document.getElementById('f-date').closest('.ff').classList.add('on');
+      var fl = document.createElement('div');
+      fl.innerHTML = '<p class="sf-sub" style="margin:18px 0 10px" data-i18n="step.flex"></p>';
+      var fo = document.createElement('div'); fo.className='sf-opts two';
+      [['yes','step.flex.yes'],['no','step.flex.no'],['deciding','step.flex.maybe']].forEach(function(f){
+        var b=document.createElement('button');
+        b.type='button'; b.className='sf-opt'; b.setAttribute('aria-pressed','false');
+        b.innerHTML='<span data-i18n="'+f[1]+'"></span><span class="tick">✓</span>';
+        b.addEventListener('click',function(){
+          flex=f[0];
+          fo.querySelectorAll('.sf-opt').forEach(function(x){x.setAttribute('aria-pressed','false');});
+          b.setAttribute('aria-pressed','true'); save();
+        });
+        fo.appendChild(b);
+      });
+      fl.appendChild(fo); body.appendChild(fl);
+    }
+    else if(st.kind === 'contact'){
+      [ 'f-email','f-phone' ].forEach(function(id){
+        var ff=document.getElementById(id).closest('.ff');
+        body.appendChild(ff); ff.classList.add('on');
+      });
+    }
+    else if(st.kind === 'review'){
+      var sum=document.createElement('div'); sum.className='sf-sum'; sum.id='sfSum';
+      body.appendChild(sum);
+      var lab=document.createElement('label'); lab.className='sf-consent';
+      lab.innerHTML='<input type="checkbox" id="f-wa"><span>'+
+        '<span data-i18n="step.wa"></span><small data-i18n="step.wa.note"></small></span>';
+      body.appendChild(lab);
+      lab.querySelector('input').addEventListener('change',function(e){ consent=e.target.checked; });
+    }
+    else {
+      var ff=document.getElementById(st.field).closest('.ff');
+      body.appendChild(ff); ff.classList.add('on');
+    }
+  });
+
+  /* ---- navigation ---- */
+  function boxes(){ return host.querySelectorAll('.sf-step'); }
+  function showErr(id,msg){ var e=document.getElementById('err-'+id);
+    if(e){ e.textContent=msg; e.classList.add('on'); } }
+  function hideErr(id){ var e=document.getElementById('err-'+id);
+    if(e) e.classList.remove('on'); }
+
+  function valid(i){
+    var st=STEPS[i];
+    if(!st.required) return true;
+    var v, el;
+    if(st.kind==='contact'){
+      var em=document.getElementById('f-email').value.trim();
+      var ph=document.getElementById('f-phone').value.trim();
+      if(!em && !ph){ showErr(st.id, T('form.err.email','Please enter a valid email.')); return false; }
+      if(em && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(em)){
+        showErr(st.id, T('form.err.email','Please enter a valid email.')); return false; }
+      return true;
+    }
+    el=document.getElementById(st.field); v=(el.value||'').trim();
+    if(!v){
+      showErr(st.id, T('form.err.'+({type:'type',date:'date',guests:'guests',name:'name'}[st.id]||'name'),
+        'Please answer this one.'));
+      return false;
+    }
+    if(st.id==='guests' && (!(Number(v)>0))){ showErr(st.id,T('form.err.guests','Please enter a guest count.')); return false; }
+    return true;
+  }
+
+  function go(i){
+    if(i>at){ for(var k=at;k<i;k++){ if(!valid(k)){ at=k; paint(); return; } } }
+    at=Math.max(0,Math.min(STEPS.length-1,i));
+    paint(); save();
+    var top=form.getBoundingClientRect().top+window.scrollY-90;
+    if(window.scrollY>top+40 || window.scrollY<top-240) window.scrollTo({top:top,behavior:'smooth'});
+    var first=boxes()[at].querySelector('input:not([type=checkbox]),textarea');
+    if(first && window.innerWidth>860) setTimeout(function(){first.focus();},260);
+  }
+
+  function paint(){
+    boxes().forEach(function(b,i){ b.classList.toggle('on', i===at); });
+    var pct=((at)/(STEPS.length-1))*100;
+    document.getElementById('sfBar').style.width=pct+'%';
+    document.getElementById('sfCount').textContent=(at+1)+' '+T('step.of','of')+' '+STEPS.length;
+    boxes()[at].querySelectorAll('.sf-back').forEach(function(b){
+      b.style.visibility = at===0 ? 'hidden' : 'visible'; });
+    if(STEPS[at].kind==='review') buildSummary();
+    fillText();
+  }
+
+  /* applyLang() lives in another scope and never reached these nodes, so the
+     controller translates its own markup. */
+  function fillText(){
+    shell.querySelectorAll('[data-i18n]').forEach(function(el){
+      var k=el.getAttribute('data-i18n'); if(!k) return;
+      var v=T(k,null);
+      if(v && v!==k) el.textContent=v;
+    });
+  }
+
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  function label(selId,v){
+    var sel=document.getElementById(selId); if(!sel) return v;
+    for(var i=0;i<sel.options.length;i++) if(sel.options[i].value===v) return sel.options[i].textContent;
+    return v;
+  }
+  function buildSummary(){
+    var rows=[
+      ['step.sum.type',  label('f-type', val('f-type')), 0],
+      ['step.sum.date',  val('f-date'), 1],
+      ['step.sum.guests',val('f-guests'), 2],
+      ['step.sum.budget',val('f-budget')?label('f-budget',val('f-budget')):'—', 3],
+      ['step.sum.name',  val('f-name'), 4],
+      ['step.sum.email', val('f-email')||val('f-phone'), 5],
+      ['step.sum.notes', val('f-details')||'—', 6]
+    ];
+    document.getElementById('sfSum').innerHTML = rows.map(function(r){
+      return '<div class="r"><b data-i18n="'+r[0]+'"></b><span>'+
+        String(r[1]).replace(/[<>]/g,'')+'</span>'+
+        '<button type="button" data-goto="'+r[2]+'" data-i18n="step.edit"></button></div>';
+    }).join('');
+    document.getElementById('sfSum').querySelectorAll('[data-goto]').forEach(function(b){
+      b.addEventListener('click',function(){ go(Number(b.dataset.goto)); });
+    });
+  }
+
+  host.addEventListener('click',function(e){
+    if(e.target.closest('.sf-back')) go(at-1);
+    else if(e.target.closest('.sf-skip')) go(at+1);
+    else if(e.target.closest('.sf-next')){
+      if(STEPS[at].kind==='review'){ submit(); }
+      else if(valid(at)) go(at+1);
+    }
+  });
+  form.addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    var t=e.target;
+    if(t.tagName==='TEXTAREA') return;
+    e.preventDefault();
+    if(STEPS[at].kind==='review') submit(); else if(valid(at)) go(at+1);
+  });
+
+  /* ---- a reload must not cost someone their answers ---- */
+  var FIELDS=['f-type','f-date','f-guests','f-budget','f-name','f-email','f-phone','f-details'];
+  function save(){
+    try{
+      var o={at:at,flex:flex};
+      FIELDS.forEach(function(id){ o[id]=val(id); });
+      sessionStorage.setItem(KEY,JSON.stringify(o));
+    }catch(e){}
+  }
+  function restore(){
+    try{
+      var o=JSON.parse(sessionStorage.getItem(KEY)||'null'); if(!o) return;
+      FIELDS.forEach(function(id){ var e=document.getElementById(id);
+        if(e&&o[id]) e.value=o[id]; });
+      flex=o.flex||'';
+      host.querySelectorAll('.sf-opt').forEach(function(b){
+        if(b.dataset.val && b.dataset.val===o['f-type']) b.setAttribute('aria-pressed','true');
+      });
+      if(o.at>0){
+        at=Math.min(o.at,STEPS.length-1);
+        var r=document.getElementById('sfResume');
+        r.textContent=T('step.resume','We kept your answers.'); r.classList.add('on');
+      }
+    }catch(e){}
+  }
+  form.addEventListener('input',save);
+  form.addEventListener('change',save);
+
+  /* ---- submit: hand the real form to the existing delivery path ---- */
+  function submit(){
+    for(var i=0;i<STEPS.length-1;i++){ if(!valid(i)){ go(i); return; } }
+    var hidden=function(n,v){
+      var h=form.querySelector('[name="'+n+'"][type=hidden]');
+      if(!h){ h=document.createElement('input'); h.type='hidden'; h.name=n; form.appendChild(h); }
+      h.value=v;
+    };
+    hidden('date_flexible', flex);
+    hidden('wa_consent', consent ? 'yes' : 'no');
+    try{ sessionStorage.removeItem(KEY); }catch(e){}
+    if(realSubmit){ realSubmit.style.display=''; realSubmit.click(); realSubmit.style.display='none'; }
+    else if(form.requestSubmit) form.requestSubmit();
+    else form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+  }
+
+  restore();
+  paint();
+  window.addEventListener('nf:langchange', paint);
 })();
 </script>
 
