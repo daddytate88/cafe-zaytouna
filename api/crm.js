@@ -2,14 +2,26 @@
 //   GET  /api/crm  — everything the dashboard needs, in one round trip
 //   POST /api/crm  — one mutation at a time, named by `action`
 // Both require CRM_READ_TOKEN. This is the owner's data; nothing here is public.
-import { db, cors, requireEnv, authorised, body } from './_db.js';
+import { db, requireEnv, authorised, body } from './_db.js';
+
+// The CRM may be opened as a file on the owner's own Mac, which sends
+// Origin: null. This route is useless without the bearer token, so it
+// accepts any origin; /api/lead stays locked to SITE_ORIGIN.
+function crmCors(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method === 'OPTIONS') { res.status(204).end(); return true; }
+  return false;
+}
 
 const STATUSES = ['new_inquiry','awaiting_customer','follow_up_due','owner_call_required',
   'contacted','qualified','needs_review','tour_scheduled','proposal_sent','negotiation',
   'booked','lost','archived'];
 
 export default async function handler(req, res) {
-  if (cors(req, res)) return;
+  if (crmCors(req, res)) return;
   if (!requireEnv(res, ['DATABASE_URL'])) return;
   if (!authorised(req)) return res.status(401).json({ error: 'unauthorized' });
 
