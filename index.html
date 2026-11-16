@@ -1045,6 +1045,57 @@ body.ncf-navhide #nav{transform:translateY(-104%)}
     font-variant-numeric:tabular-nums;transition:opacity .6s ease .1s,transform .7s var(--ncf-out) .1s}
   .sec-head.in .ncf-idx{opacity:.8;transform:none}
 }
+
+/* ---- FAQ ---- */
+.sec-faq{background:var(--lilac-mist)}
+.faq-list{max-width:780px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--lilac);padding:2px 0}
+.faq-item summary{list-style:none;cursor:pointer;padding:19px 42px 19px 2px;position:relative;
+  font-family:var(--serif,'Cormorant Garamond',Georgia,serif);font-size:20px;line-height:1.35;
+  color:var(--violet);font-weight:600;transition:color .25s}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:hover{color:var(--sage-deep)}
+.faq-mark{position:absolute;right:4px;top:50%;width:14px;height:14px;margin-top:-7px}
+.faq-mark::before,.faq-mark::after{content:"";position:absolute;background:var(--sage-deep);
+  border-radius:2px;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .25s}
+.faq-mark::before{left:0;top:6px;width:14px;height:2px}
+.faq-mark::after{left:6px;top:0;width:2px;height:14px}
+.faq-item[open] .faq-mark::after{transform:rotate(90deg);opacity:0}
+.faq-a{padding:0 42px 20px 2px;font-size:15px;line-height:1.72;color:var(--espresso-soft,#6B5685);
+  animation:faqIn .45s cubic-bezier(.16,1,.3,1)}
+.faq-a p{margin:0}
+@keyframes faqIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media(max-width:640px){
+  .faq-item summary{font-size:17px;padding:16px 36px 16px 0}
+  .faq-a{padding:0 36px 17px 0;font-size:14.2px}
+}
+
+/* ---- testimonials ---- */
+.tm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
+  gap:20px;max-width:1040px;margin:0 auto}
+.tm-card{background:var(--white,#FDFBF7);border:1px solid var(--lilac);border-radius:14px;
+  padding:26px 24px;position:relative}
+.tm-card .tm-q{font-family:var(--serif,Georgia,serif);font-size:44px;line-height:1;
+  color:var(--lilac);margin-bottom:6px}
+.tm-card p{font-size:15px;line-height:1.7;color:var(--espresso-soft,#6B5685);margin:0 0 14px}
+.tm-card b{font-size:13px;letter-spacing:.06em;color:var(--violet)}
+
+/* ---- WhatsApp bubble, stacked above the call bubble ---- */
+.wa-cta{position:fixed;right:26px;bottom:96px;z-index:60;display:inline-flex;align-items:center;
+  gap:10px;padding:12px 18px 12px 14px;border-radius:40px;background:#1F7A4D;color:#fff;
+  text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;
+  box-shadow:0 10px 30px -12px rgba(31,122,77,.65);
+  transition:transform .3s cubic-bezier(.34,1.42,.64,1),box-shadow .3s}
+.wa-cta:hover{transform:translateY(-2px);box-shadow:0 16px 38px -14px rgba(31,122,77,.75)}
+.wa-cta:active{transform:scale(.95)}
+.wa-cta svg{width:21px;height:21px;flex:0 0 21px;fill:#fff}
+body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:152px}
+@media(max-width:640px){
+  .wa-cta{right:14px;bottom:84px;padding:11px 15px 11px 12px;font-size:12px}
+  .wa-cta svg{width:19px;height:19px;flex:0 0 19px}
+  body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:140px}
+}
+@media (prefers-reduced-motion:reduce){ .wa-cta{transition:none} }
 </style>
 <meta property="og:title" content="Nathan Café Floral — Café, Floral Studio &amp; Private Event Venue, Montréal">
 <meta property="og:description" content="Specialty coffee café and private event venue at 1350 Mazurette, Ahuntsic-Cartierville, Montréal, near Marché Central. Intimate weddings, receptions and private parties for up to 50 guests, plus Saturday brunch by reservation.">
@@ -1081,7 +1132,8 @@ body.ncf-navhide #nav{transform:translateY(-104%)}
     <a href="#floral" data-i18n="nav.floral">Floral Studio</a>
     <a href="#venue" data-i18n="nav.venue">Weddings</a>
     <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
-    <a href="#contact" data-i18n="nav.contact">Contact</a>
+    <a href="#faq" data-i18n="nav.faq">FAQ</a>
+<a href="#contact" data-i18n="nav.contact">Contact</a>
     <a href="#inquire" class="nav-cta" data-i18n="nav.cta">Private Events</a>
   </div>
   <div class="nav-right">
@@ -1103,7 +1155,8 @@ body.ncf-navhide #nav{transform:translateY(-104%)}
   <a href="#floral" data-i18n="nav.floral">Floral Studio</a>
   <a href="#events" data-i18n="nav.events">Private Events</a>
   <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
-  <a href="#contact" data-i18n="nav.contact">Contact</a>
+  <a href="#faq" data-i18n="nav.faq">FAQ</a>
+<a href="#contact" data-i18n="nav.contact">Contact</a>
   <div class="mm-cta"><a href="#inquire" data-i18n="nav.cta">Private Events</a></div>
 </div>
 
@@ -1469,6 +1522,23 @@ body.ncf-navhide #nav{transform:translateY(-104%)}
         <input id="f-guests" name="guests" type="number" min="1" max="500" required>
         <div class="ff-err" data-i18n="form.err.guests">Please enter an estimated guest count.</div>
       </div>
+<div class="ff-row">
+<div class="ff" data-field="budget">
+<label for="f-budget" data-i18n="form.budget">Approximate budget</label>
+<select id="f-budget" name="budget">
+<option value="" data-i18n="form.budget.0">Select a range</option>
+<option value="under_5000" data-i18n="form.budget.1">Under $5,000</option>
+<option value="5000-7500" data-i18n="form.budget.2">$5,000 – $7,500</option>
+<option value="7500-10000" data-i18n="form.budget.3">$7,500 – $10,000</option>
+<option value="10000-15000" data-i18n="form.budget.4">$10,000 – $15,000</option>
+<option value="15000+" data-i18n="form.budget.5">$15,000+</option>
+<option value="not_sure" data-i18n="form.budget.6">Not sure yet</option>
+<option value="discuss" data-i18n="form.budget.7">I would rather discuss it</option>
+</select>
+<small class="ff-hint" data-i18n="form.budget.hint">Your whole event — room, catering, extras. A range is fine.</small>
+</div>
+</div>
+
 </div>
       <div class="ff" data-field="details">
         <label for="f-details" data-i18n="form.details">Additional Details</label>
@@ -1481,6 +1551,64 @@ body.ncf-navhide #nav{transform:translateY(-104%)}
 </section>
 
 <!-- ============ LOCATION / CONTACT ============ -->
+<section class="section sec-faq" id="faq">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow" data-i18n="faq.eyebrow">Good to know</div>
+      <h2 data-i18n="faq.h2">Questions We Are Asked Most</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q1">How many guests can the room seat?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a1">Up to 50 seated. If your guest list is larger, write to us anyway and we will tell you honestly whether it works.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q2">What does the private room cost?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a2">1 950 $ for the room, rectangular tables included.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q3">How do I hold a date?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a3">A 30% deposit confirms it, plus a 250 $ deposit that is returned the day after your event. The balance is due 48 hours before.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q4">Can I bring my own caterer and alcohol?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a4">Yes to both. Bring your own caterer, and bring your own alcohol or we can arrange a turnkey bar.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q5">Do you decorate?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a5">Balloon styling starts at 300 $. Tell us what you have in mind and we will quote it.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q6">When is Saturday brunch?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a6">Two seatings, 10:00 and 12:15, by reservation only. The café is closed to walk-ins on Saturdays.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q7">How do I order flowers?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a7">A florist studio shares our space and takes orders on its own site, not through the café.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span data-i18n="faq.q8">How soon will you reply?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-a"><p data-i18n="faq.a8">Enquiries reach the owner straight away and she answers personally, usually the same day.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="section sec-tm" id="testimonials" hidden>
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow" data-i18n="tm.eyebrow">In their words</div>
+      <h2 data-i18n="tm.h2">What Our Guests Say</h2>
+    </div>
+    <div class="tm-grid" id="tmGrid"></div>
+    <div style="text-align:center;margin-top:26px">
+      <a class="btn btn-sage" id="tmLink" target="_blank" rel="noopener"
+         href="https://search.google.com/local/writereview?placeid=ChIJ5bwQNg4ZyUwRojs32ikTK34"
+         data-i18n="tm.cta">Read our Google reviews</a>
+    </div>
+  </div>
+</section>
+
 <section class="section sec-location" id="contact">
   <div class="container">
     <div class="sec-head" data-reveal>
@@ -1617,6 +1745,40 @@ body.ncf-navhide #nav{transform:translateY(-104%)}
 
 <script id="nf-i18n">
 window.NF_DICT = {
+  "wa.float":{"en":"WhatsApp","fr":"WhatsApp"},
+  "wa.msg":{"en":"Hello! I would like to ask about Nathan Caf\u00e9 Floral.","fr":"Bonjour! J'aimerais avoir des informations sur Nathan Caf\u00e9 Floral."},
+  "faq.eyebrow":{"en":"Good to know","fr":"Bon \u00e0 savoir"},
+  "faq.h2":{"en":"Questions We Are Asked Most","fr":"Les questions qu'on nous pose"},
+  "faq.q1":{"en":"How many guests can the room seat?","fr":"Combien d'invit\u00e9s la salle peut-elle accueillir?"},
+  "faq.a1":{"en":"Up to 50 seated. If your guest list is larger, write to us anyway and we will tell you honestly whether it works.","fr":"Jusqu'\u00e0 50 personnes assises. Si votre liste est plus longue, \u00e9crivez-nous quand m\u00eame et nous vous dirons franchement si c'est possible."},
+  "faq.q2":{"en":"What does the private room cost?","fr":"Quel est le co\u00fbt de la salle priv\u00e9e?"},
+  "faq.a2":{"en":"1\u00a0950\u00a0$ for the room, rectangular tables included.","fr":"1\u00a0950\u00a0$ pour la salle, tables rectangulaires incluses."},
+  "faq.q3":{"en":"How do I hold a date?","fr":"Comment r\u00e9server une date?"},
+  "faq.a3":{"en":"A 30% deposit confirms it, plus a 250\u00a0$ deposit that is returned the day after your event. The balance is due 48 hours before.","fr":"Un d\u00e9p\u00f4t de 30% la confirme, plus un d\u00e9p\u00f4t de 250\u00a0$ remis le lendemain de votre \u00e9v\u00e9nement. Le solde est d\u00fb 48 heures avant."},
+  "faq.q4":{"en":"Can I bring my own caterer and alcohol?","fr":"Puis-je apporter mon traiteur et mon alcool?"},
+  "faq.a4":{"en":"Yes to both. Bring your own caterer, and bring your own alcohol or we can arrange a turnkey bar.","fr":"Oui aux deux. Apportez votre traiteur, et votre alcool \u2014 ou nous pouvons organiser un bar cl\u00e9 en main."},
+  "faq.q5":{"en":"Do you decorate?","fr":"Offrez-vous la d\u00e9coration?"},
+  "faq.a5":{"en":"Balloon styling starts at 300\u00a0$. Tell us what you have in mind and we will quote it.","fr":"Le stylisme de ballons commence \u00e0 300\u00a0$. Dites-nous ce que vous imaginez et nous vous ferons une soumission."},
+  "faq.q6":{"en":"When is Saturday brunch?","fr":"Quand a lieu le brunch du samedi?"},
+  "faq.a6":{"en":"Two seatings, 10:00 and 12:15, by reservation only. The caf\u00e9 is closed to walk-ins on Saturdays.","fr":"Deux services, 10h00 et 12h15, sur r\u00e9servation seulement. Le caf\u00e9 est ferm\u00e9 sans r\u00e9servation le samedi."},
+  "faq.q7":{"en":"How do I order flowers?","fr":"Comment commander des fleurs?"},
+  "faq.a7":{"en":"A florist studio shares our space and takes orders on its own site, not through the caf\u00e9.","fr":"Un studio floral partage notre espace et prend les commandes sur son propre site, pas via le caf\u00e9."},
+  "faq.q8":{"en":"How soon will you reply?","fr":"Quel est votre d\u00e9lai de r\u00e9ponse?"},
+  "faq.a8":{"en":"Enquiries reach the owner straight away and she answers personally, usually the same day.","fr":"Les demandes parviennent imm\u00e9diatement \u00e0 la propri\u00e9taire, qui r\u00e9pond personnellement, g\u00e9n\u00e9ralement le jour m\u00eame."},
+  "tm.eyebrow":{"en":"In their words","fr":"Dans leurs mots"},
+  "tm.h2":{"en":"What Our Guests Say","fr":"Ce que disent nos invit\u00e9s"},
+  "tm.cta":{"en":"Read our Google reviews","fr":"Lire nos avis Google"},
+  "form.budget":{"en":"Approximate budget","fr":"Budget approximatif"},
+  "form.budget.hint":{"en":"Your whole event \u2014 room, catering, extras. A range is fine.","fr":"Pour l'ensemble de votre \u00e9v\u00e9nement \u2014 salle, traiteur, extras. Une fourchette suffit."},
+  "form.budget.0":{"en":"Select a range","fr":"Choisir une fourchette"},
+  "form.budget.1":{"en":"Under $5,000","fr":"Moins de 5\u00a0000\u00a0$"},
+  "form.budget.2":{"en":"$5,000 \u2013 $7,500","fr":"5\u00a0000\u00a0$ \u2013 7\u00a0500\u00a0$"},
+  "form.budget.3":{"en":"$7,500 \u2013 $10,000","fr":"7\u00a0500\u00a0$ \u2013 10\u00a0000\u00a0$"},
+  "form.budget.4":{"en":"$10,000 \u2013 $15,000","fr":"10\u00a0000\u00a0$ \u2013 15\u00a0000\u00a0$"},
+  "form.budget.5":{"en":"$15,000+","fr":"15\u00a0000\u00a0$ et plus"},
+  "form.budget.6":{"en":"Not sure yet","fr":"Je ne sais pas encore"},
+  "form.budget.7":{"en":"I would rather discuss it","fr":"Je pr\u00e9f\u00e8re en discuter"},
+  "nav.faq":{"en":"FAQ","fr":"FAQ"},
   "form.phone":{"en":"Phone","fr":"Téléphone"},"nav.home": {"en": "Home", "fr": "Accueil"}, "nav.cafe": {"en": "The Café", "fr": "Le Café"}, "nav.floral": {"en": "Floral Studio", "fr": "Studio Floral"}, "nav.events": {"en": "Private Events", "fr": "Événements Privés"}, "nav.gallery": {"en": "Gallery", "fr": "Galerie"}, "nav.contact": {"en": "Contact", "fr": "Contact"}, "nav.cta": {"en": "Private Events", "fr": "Événements Privés"}, "hero.eyebrow": {"en": "Montréal · Café · Floral · Events", "fr": "Montréal · Café · Floral · Événements"}, "hero.h1a": {"en": "Where Coffee, Flowers", "fr": "Là où café, fleurs"}, "hero.h1b": {"en": "Moments", "fr": "Moments"}, "hero.h1c": {"en": "Come Together.", "fr": "se rencontrent."}, "hero.sub": {"en": "A unique Montréal destination bringing together specialty coffee, professional floral services, and intimate private gatherings.", "fr": "Une destination montréalaise unique réunissant café de spécialité, services floraux professionnels et événements privés intimes."}, "hero.cta1": {"en": "Discover Nathan", "fr": "Découvrir Nathan"}, "hero.cta2": {"en": "Host Your Event", "fr": "Organiser Votre Événement"}, "hero.scroll": {"en": "Scroll", "fr": "Défiler"}, "cafe.eyebrow": {"en": "The Coffee Experience", "fr": "L'Expérience Café"}, "cafe.h3": {"en": "A Moment Worth Savoring.", "fr": "Un Moment à Savourer."}, "cafe.p": {"en": "Step into a warm, light-filled space built around specialty coffee — a welcoming corner of the neighbourhood made for slowing down, meeting a friend, or simply pausing with something beautifully made.", "fr": "Entrez dans un espace chaleureux et lumineux pensé autour du café de spécialité — un coin accueillant du quartier fait pour ralentir, retrouver un ami, ou simplement s'arrêter avec quelque chose de bien fait."}, "cafe.cta": {"en": "Discover the Café", "fr": "Découvrir le Café"}, "floral.eyebrow": {"en": "The Floral Studio", "fr": "Le Studio Floral"}, "floral.h3": {"en": "Flowers, Thoughtfully Brought Together.", "fr": "Des Fleurs, Pensées avec Soin."}, "floral.p": {"en": "A florist studio shares our space, so there are always fresh flowers in the room — bouquets for the everyday, and full floral design for a celebration. Orders are placed directly with the studio, on their own site.", "fr": "Un studio floral partage notre espace : il y a donc toujours des fleurs fraîches dans la salle — bouquets du quotidien et conception florale complète pour une célébration. Les commandes se font directement auprès du studio, sur son propre site."}, "floral.cta": {"en": "Order flowers from the studio", "fr": "Commander des fleurs au studio"}, "events.eyebrow": {"en": "Private Events", "fr": "Événements Privés"}, "events.h3": {"en": "Your Occasion. Our Space.", "fr": "Votre Occasion. Notre Espace."}, "events.p": {"en": "Our café and floral boutique transforms into an elegant, light-filled venue for private gatherings — weddings, celebrations, and intimate occasions set among flowers and warm, considered design.", "fr": "Notre café et boutique florale se transforme en un lieu élégant et lumineux pour vos événements privés — mariages, célébrations et occasions intimes, entourés de fleurs et d'un design chaleureux et soigné."}, "events.cta": {"en": "Plan Your Private Event", "fr": "Planifier Votre Événement Privé"}, "gallery.eyebrow": {"en": "Gallery", "fr": "Galerie"}, "gallery.h2": {"en": "A glimpse <em>inside</em> Nathan.", "fr": "Un aperçu <em>à l'intérieur</em> de Nathan."}, "gallery.p": {"en": "A visual introduction to the space, the flowers, and the moments hosted within it.", "fr": "Une introduction visuelle à l'espace, aux fleurs et aux moments qui s'y déroulent."}, "gallery.tag.events": {"en": "Private Events", "fr": "Événements Privés"}, "gallery.tag.floral": {"en": "Floral Studio", "fr": "Studio Floral"}, "gallery.tag.cafe": {"en": "Café Atmosphere", "fr": "Ambiance du Café"}, "gallery.tag.interior": {"en": "Interior & Design", "fr": "Intérieur et Design"}, "gallery.ig": {"en": "Follow @nathancafefloral", "fr": "Suivre @nathancafefloral"}, "about.eyebrow": {"en": "About Nathan", "fr": "À Propos de Nathan"}, "about.h2": {"en": "More Than a Café. A Place to Experience.", "fr": "Plus Qu'un Café. Un Lieu à Vivre."}, "about.p": {"en": "Nathan Café Floral brings three experiences into one space in Montréal — specialty coffee, professional floral services, and a setting for private events — designed as a single, considered destination rather than three separate businesses.", "fr": "Nathan Café Floral réunit trois expériences en un seul lieu à Montréal — café de spécialité, services floraux professionnels et un cadre pour événements privés — conçu comme une destination unique et réfléchie plutôt que trois commerces distincts."}, "about.p1h": {"en": "Specialty Coffee", "fr": "Café de Spécialité"}, "about.p1p": {"en": "A welcoming café experience, built around specialty coffee.", "fr": "Une expérience café accueillante, bâtie autour du café de spécialité."}, "about.p2h": {"en": "Professional Florist", "fr": "Fleuriste Professionnel"}, "about.p2p": {"en": "Professional floral services in a boutique environment.", "fr": "Des services floraux professionnels dans un environnement boutique."}, "about.p3h": {"en": "Private Events", "fr": "Événements Privés"}, "about.p3p": {"en": "A distinctive space for private events and special gatherings.", "fr": "Un espace distinctif pour événements privés et occasions spéciales."}, "form.eyebrow": {"en": "Private Event Inquiry", "fr": "Demande d'Événement Privé"}, "form.h2": {"en": "Let's Start Planning.", "fr": "Commençons à Planifier."}, "form.p": {"en": "Tell us a little about your occasion and we'll follow up to discuss availability and details.", "fr": "Parlez-nous un peu de votre occasion et nous vous recontacterons pour discuter des disponibilités et des détails."}, "form.note": {"en": "This form sends an inquiry, not an instant booking confirmation. Our team will follow up by email to discuss availability and next steps.", "fr": "Ce formulaire envoie une demande, et non une confirmation de réservation instantanée. Notre équipe vous recontactera par courriel pour discuter des disponibilités et des prochaines étapes."}, "form.name": {"en": "Full Name", "fr": "Nom Complet"}, "form.err.name": {"en": "Please enter your name.", "fr": "Veuillez entrer votre nom."}, "form.email": {"en": "Email Address", "fr": "Adresse Courriel"}, "form.err.email": {"en": "Please enter a valid email.", "fr": "Veuillez entrer un courriel valide."}, "form.type": {"en": "Event Type", "fr": "Type d'Événement"}, "form.type.ph": {"en": "Select an event type", "fr": "Sélectionnez un type d'événement"}, "form.type.wedding": {"en": "Wedding", "fr": "Mariage"}, "form.type.engagement": {"en": "Engagement", "fr": "Fiançailles"}, "form.type.corporate": {"en": "Corporate Event", "fr": "Événement Corporatif"}, "form.type.birthday": {"en": "Birthday / Celebration", "fr": "Anniversaire / Célébration"}, "form.type.other": {"en": "Other", "fr": "Autre"}, "form.err.type": {"en": "Please select an event type.", "fr": "Veuillez sélectionner un type d'événement."}, "form.date": {"en": "Preferred Date", "fr": "Date Souhaitée"}, "form.err.date": {"en": "Please select a preferred date.", "fr": "Veuillez sélectionner une date souhaitée."}, "form.guests": {"en": "Estimated Number of Guests", "fr": "Nombre Estimé d'Invités"}, "form.err.guests": {"en": "Please enter an estimated guest count.", "fr": "Veuillez entrer un nombre estimé d'invités."}, "form.details": {"en": "Additional Details", "fr": "Détails Supplémentaires"}, "form.details.ph": {"en": "Tell us about your vision, timing, or anything else we should know.", "fr": "Parlez-nous de votre vision, du moment souhaité, ou de tout autre détail important."}, "form.submit": {"en": "Send Event Inquiry", "fr": "Envoyer la Demande"}, "form.status.invalid": {"en": "Please correct the fields marked in red.", "fr": "Veuillez corriger les champs indiqués en rouge."}, "form.status.notwired": {"en": "This form is not yet connected to an email or booking service. Please email Info@nathancafefloral.com directly, or connect a form backend to enable automatic submissions.", "fr": "Ce formulaire n'est pas encore connecté à un service de courriel ou de réservation. Veuillez écrire directement à Info@nathancafefloral.com, ou connecter un service pour activer l'envoi automatique."}, "loc.eyebrow": {"en": "Visit Nathan", "fr": "Visitez Nathan"}, "loc.h2": {"en": "Find Us in Montréal.", "fr": "Trouvez-Nous à Montréal."}, "loc.address": {"en": "Address", "fr": "Adresse"}, "loc.email": {"en": "Email", "fr": "Courriel"}, "loc.insta": {"en": "Instagram", "fr": "Instagram"}, "loc.cta1": {"en": "Get Directions", "fr": "Obtenir l'Itinéraire"}, "loc.cta2": {"en": "Make an Inquiry", "fr": "Faire une Demande"}, "foot.tag": {"en": "Specialty coffee, professional floral services, and private events in the heart of Montréal.", "fr": "Café de spécialité, services floraux professionnels et événements privés au cœur de Montréal."}, "foot.explore": {"en": "Explore", "fr": "Explorer"}, "foot.visit": {"en": "Visit", "fr": "Visiter"}, "foot.made": {"en": "Montréal, Québec", "fr": "Montréal, Québec"}, "sticky.text": {"en": "Planning something special?", "fr": "Vous planifiez quelque chose de spécial?"}, "nav.menu": {"en": "Menu", "fr": "Menu"}, "menu.eyebrow": {"en": "On the Menu", "fr": "Au Menu"}, "menu.h2": {"en": "Specialty Coffee, Simply Done.", "fr": "Café de Spécialité, Simplement Fait."}, "menu.p": {"en": "A short, considered selection — ask in-café about seasonal additions.", "fr": "Une sélection courte et réfléchie — demandez en boutique les ajouts saisonniers."}, "menu.latte": {"en": "Latte", "fr": "Latte"}, "menu.matcha": {"en": "Matcha", "fr": "Matcha"}, "menu.americano": {"en": "Americano", "fr": "Americano"}, "menu.cappuccino": {"en": "Cappuccino", "fr": "Cappuccino"}, "menu.note": {"en": "Full menu, pricing, and seasonal specials available in-café.", "fr": "Menu complet, prix et spéciaux saisonniers disponibles en boutique."}, "loc.phone": {"en": "Phone", "fr": "Téléphone"}, "loc.hours": {"en": "Hours", "fr": "Heures"}, "loc.openmaps": {"en": "Open in Google Maps", "fr": "Ouvrir dans Google Maps"}, "hours.mon": {"en": "Monday", "fr": "Lundi"}, "hours.tue": {"en": "Tuesday", "fr": "Mardi"}, "hours.wed": {"en": "Wednesday", "fr": "Mercredi"}, "hours.thu": {"en": "Thursday", "fr": "Jeudi"}, "hours.fri": {"en": "Friday", "fr": "Vendredi"}, "hours.sat": {"en": "Saturday", "fr": "Samedi"}, "hours.sun": {"en": "Sunday", "fr": "Dimanche"}, "hours.closed": {"en": "Closed", "fr": "Fermé"}, "call.label": {"en": "Call Now", "fr": "Appeler"}, "review.h3": {"en": "Loved your visit?", "fr": "Vous avez aimé votre visite?"}, "review.p": {"en": "Leave us a review — it helps other Montréalers find Nathan.", "fr": "Laissez-nous un avis — cela aide d'autres Montréalais à découvrir Nathan."}, "review.cta": {"en": "Leave Us a Review", "fr": "Laisser un Avis"}, "nav.brunch": {"en": "Brunch", "fr": "Brunch"}, "brunch.eyebrow": {"en": "Saturdays at Nathan", "fr": "Les samedis chez Nathan"}, "brunch.h2a": {"en": "Saturday", "fr": "Le brunch"}, "brunch.h2b": {"en": "Brunch", "fr": "du samedi"}, "brunch.lede": {"en": "Two seatings every Saturday, in the calm of the café. Forty places per seating, and tables are released in advance — reserving ahead is the surest way to get the time you want.", "fr": "Deux services chaque samedi, dans le calme du café. Quarante places par service, et les tables s'ouvrent à l'avance — réserver est le plus sûr moyen d'avoir l'heure qui vous convient."}, "brunch.first": {"en": "First brunch:", "fr": "Premier brunch :"}, "brunch.firstdate": {"en": "Saturday 28 November 2026", "fr": "Samedi 28 novembre 2026"}, "brunch.svc1k": {"en": "First seating", "fr": "Premier service"}, "brunch.svc2k": {"en": "Second seating", "fr": "Deuxième service"}, "brunch.seats": {"en": "40 places", "fr": "40 places"}, "bform.name": {"en": "Full name", "fr": "Nom complet"}, "bform.email": {"en": "Email", "fr": "Courriel"}, "bform.phone": {"en": "Phone", "fr": "Téléphone"}, "bform.date": {"en": "Saturday", "fr": "Samedi"}, "bform.date.ph": {"en": "Choose a Saturday", "fr": "Choisir un samedi"}, "bform.service": {"en": "Seating", "fr": "Service"}, "bform.service.ph": {"en": "Choose a seating", "fr": "Choisir un service"}, "bform.guests": {"en": "Guests", "fr": "Personnes"}, "bform.notes": {"en": "Allergies or notes", "fr": "Allergies ou précisions"}, "bform.optional": {"en": "(optional)", "fr": "(facultatif)"}, "bform.submit": {"en": "Request this table", "fr": "Demander cette table"}, "bform.invalid": {"en": "Please correct the fields marked in red.", "fr": "Veuillez corriger les champs en rouge."}, "bform.notwired": {"en": "This booking form is not connected to a reservation system yet, so nothing has been sent. Please call or email to confirm your table — or connect a booking service and requests will arrive automatically.", "fr": "Ce formulaire n'est pas encore relié à un système de réservation : rien n'a été envoyé. Téléphonez-nous ou écrivez-nous pour confirmer votre table — ou branchez un service de réservation et les demandes arriveront automatiquement."}, "floral.note": {"en": "Flower orders are handled by the florist studio, not by the café. Replace the link above with the studio's own website address and it will open straight to their ordering page.", "fr": "Les commandes de fleurs sont gérées par le studio floral, et non par le café. Remplacez le lien ci-dessus par l'adresse du site du studio et il mènera directement à sa page de commande."}, "nav.venue": {"en": "Weddings", "fr": "Mariages"}, "venue.eyebrow": {"en": "Private events · Weddings", "fr": "Événements privés · Mariages"}, "venue.h2": {"en": "Your Celebration, Held Privately.", "fr": "Votre célébration, rien qu'à vous."}, "venue.p": {"en": "The whole room becomes yours for the evening — candlelight, florals, and a long table under the glass wall. Intimate weddings, engagements, birthdays and corporate evenings for up to fifty guests.", "fr": "La salle entière vous appartient le temps d'une soirée — chandelles, fleurs et une grande tablée devant le mur vitré. Mariages intimes, fiançailles, anniversaires et soirées corporatives jusqu'à cinquante personnes."}, "venue.cap.k": {"en": "Capacity", "fr": "Capacité"}, "venue.cap.s": {"en": "seated guests", "fr": "personnes assises"}, "venue.lay.k": {"en": "Layout", "fr": "Disposition"}, "venue.lay.v": {"en": "Rectangular tables", "fr": "Tables rectangulaires"}, "venue.lay.s": {"en": "arranged to your plan", "fr": "disposées selon votre plan"}, "venue.rate.k": {"en": "Venue hire", "fr": "Location de salle"}, "venue.rate.s": {"en": "for the room, all in", "fr": "pour la salle, tout inclus"}, "venue.inc.h": {"en": "What's included", "fr": "Ce qui est inclus"}, "venue.inc.1": {"en": "Dishes and cutlery", "fr": "Vaisselle et ustensiles"}, "venue.inc.2": {"en": "Table decoration", "fr": "Décoration des tables"}, "venue.inc.3": {"en": "Tables and chairs", "fr": "Tables et chaises"}, "venue.inc.4": {"en": "Standard cleaning", "fr": "Ménage de base"}, "venue.inc.5": {"en": "Full use of the space", "fr": "Utilisation de l'espace"}, "venue.add.h": {"en": "Add to it", "fr": "Services additionnels"}, "venue.add.1": {"en": "Bring your own alcohol, or quote a turnkey bar", "fr": "Apportez votre alcool, ou obtenez une soumission pour un bar clé en main"}, "venue.add.2": {"en": "Bring your own caterer, or request a quote", "fr": "Apportez votre traiteur, ou demandez une soumission"}, "venue.add.3": {"en": "Balloon installation, from 300 $", "fr": "Décoration ballon, à partir de 300 $"}, "venue.add.4": {"en": "Bespoke requests, quoted individually", "fr": "Demandes sur mesure, sur devis"}, "venue.terms.h": {"en": "Booking terms", "fr": "Conditions de réservation"}, "venue.terms.1": {"en": "30% deposit confirms the date", "fr": "Dépôt de 30 % pour confirmer la date"}, "venue.terms.2": {"en": "250 $ of the deposit is refundable the next day", "fr": "250 $ du dépôt remboursable le lendemain"}, "venue.terms.3": {"en": "Balance due 48 hours before the event", "fr": "Solde dû 48 h avant l'évènement"}, "venue.terms.4": {"en": "Saturday and Sunday rental slots", "fr": "Plages de location samedi et dimanche"}, "venue.cta1": {"en": "Check your date", "fr": "Vérifier votre date"}, "venue.cta2": {"en": "Arrange a visit", "fr": "Planifier une visite"}, "hours.note": {"en": "Saturday brunch runs by reservation only, in two seatings — the café itself stays closed to walk-ins. Private events are scheduled separately.", "fr": "Le brunch du samedi est sur réservation seulement, en deux services — le café reste fermé sans réservation. Les événements privés sont planifiés séparément."}, "bform.sent": {"en": "Thank you — your brunch request has been sent. We will confirm by email.", "fr": "Merci — votre demande de brunch a été envoyée. Nous confirmerons par courriel."}, "form.status.sent": {"en": "Thank you — your enquiry has been sent. We will be in touch shortly.", "fr": "Merci — votre demande a été envoyée. Nous vous reviendrons sous peu."}, "form.status.failed": {"en": "That did not go through. Please email Info@nathancafefloral.com or call us.", "fr": "L'envoi a échoué. Écrivez à Info@nathancafefloral.com ou appelez-nous."}};
 </script>
 <script id="nf-main">
@@ -2270,7 +2432,8 @@ window.NCF_ENDPOINT = "";
   /* field name on the form -> field name in the CRM */
   var MAP = {
     eventForm:  {name:'name', email:'email', phone:'phone', event_type:'type',
-                 event_date:'date', guests:'guests', message:'details'},
+                 event_date:'date', guests:'guests', message:'details',
+                 budget_band:'budget'},
     brunchForm: {name:'bname', email:'bemail', phone:'bphone', event_date:'bdate',
                  seating:'bservice', guests:'bguests', message:'bnotes'}
   };
@@ -2290,7 +2453,7 @@ window.NCF_ENDPOINT = "";
       source:'website', form:formId, lang:lang(),
       name:out.name||'', email:out.email||'', phone:out.phone||'',
       event_type:out.event_type||'', event_date:out.event_date||'',
-      guests:out.guests, message:out.message||''
+      guests:out.guests, budget_band:out.budget_band||'', message:out.message||''
     };
   }
 
@@ -2348,6 +2511,28 @@ window.NCF_ENDPOINT = "";
     return f ? 'NCF-LEAD.' + b64url(buildLead(f, f.id)) : null;
   };
 })();
+
+/* ---------- testimonials ----------
+   Deliberately empty. Paste real quotes here — from Google reviews or
+   written permission — and the section reveals itself. Nothing invented
+   is ever shown as a customer's words. */
+window.NCF_TESTIMONIALS = [
+  // { quote:{en:"…", fr:"…"}, who:"First name L." }
+];
+(function(){
+  var sec=document.getElementById('testimonials'),
+      grid=document.getElementById('tmGrid');
+  if(!sec||!grid) return;
+  var list=window.NCF_TESTIMONIALS||[];
+  if(!list.length) return;                       // stays hidden
+  sec.hidden=false;
+  grid.innerHTML=list.slice(0,6).map(function(t){
+    var lang=(document.documentElement.getAttribute('lang')||'en').slice(0,2);
+    var q=typeof t.quote==='string'?t.quote:(t.quote[lang]||t.quote.en||'');
+    return '<figure class="tm-card"><div class="tm-q">\u201C</div><p>'+
+      String(q).replace(/[<>]/g,'')+'</p><b>'+String(t.who||'').replace(/[<>]/g,'')+'</b></figure>';
+  }).join('');
+})();
 </script>
 
 <script type="application/ld+json">
@@ -2399,5 +2584,10 @@ window.NCF_ENDPOINT = "";
   setTimeout(show,9000);
 })();
 </script>
+<a class="wa-cta" id="waCta" target="_blank" rel="noopener"
+   href="https://wa.me/15148159117" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.02h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.37c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.22-8.24 8.22z"/></svg>
+  <span data-i18n="wa.float">WhatsApp</span>
+</a>
 </body>
 </html>

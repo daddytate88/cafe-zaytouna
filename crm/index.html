@@ -284,12 +284,14 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--wh
         <button data-view="dash"><span class="ic">▣</span> Dashboard</button>
         <button data-view="inbox"><span class="ic">⇩</span> Inbox <span class="pill" id="pillInbox">0</span></button>
         <button data-view="leads"><span class="ic">◈</span> Leads <span class="pill" id="pillLeads">0</span></button>
+        <button data-view="calendar"><span class="ic">▦</span> Calendar</button>
         <button data-view="bookings"><span class="ic">◆</span> Bookings &amp; Events</button>
         <button data-view="customers"><span class="ic">◉</span> Customers</button>
       </div>
       <div class="nav-group">
         <div class="nav-label">Operations</div>
         <button data-view="quotes"><span class="ic">$</span> Quotes &amp; Pricing</button>
+        <button data-view="alerts"><span class="ic">!</span> Notifications <span class="pill" id="pillAlerts">0</span></button>
         <button data-view="reviews"><span class="ic">★</span> Review Follow-ups</button>
         <button data-view="kb"><span class="ic">≡</span> Knowledge Base</button>
       </div>
@@ -299,7 +301,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--wh
         <button data-view="settings"><span class="ic">⚙</span> Settings &amp; Data</button>
       </div>
     </nav>
-    <div class="side-foot">
+    <div class="side-foot" id="sideFoot">
       <b>Local workspace</b><br>
       Records are stored in this browser only.
     </div>
@@ -313,6 +315,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--wh
         <div class="sub" id="vSub">An overview of the venue's enquiries</div>
       </div>
       <div class="spacer"></div>
+      <span id="connState"></span>
       <div id="topActions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
     </header>
     <div class="wrap" id="view"></div>
@@ -347,16 +350,22 @@ const NCF = {};
 
 /* ---------- stages ---------- */
 NCF.STAGES = [
-  {id:'new',       label:'New inquiry',    color:'#6B8CBF'},
-  {id:'contacted', label:'Contacted',      color:'#7E6BA8'},
-  {id:'qualified', label:'Qualified',      color:'#A98FC0'},
-  {id:'visit',     label:'Visit scheduled',color:'#C2A15E'},
-  {id:'proposal',  label:'Proposal sent',  color:'#C98A5B'},
-  {id:'booked',    label:'Booked',         color:'#2F7D59'},
-  {id:'completed', label:'Completed',      color:'#6F4E92'},
-  {id:'lost',      label:'Lost',           color:'#9B7A7A'}
+  {id:'new_inquiry',  label:'New',           color:'#6B8CBF'},
+  {id:'contacted',    label:'Contacted',     color:'#7E6BA8'},
+  {id:'follow_up_due',label:'Follow-up due', color:'#C2A15E'},
+  {id:'qualified',    label:'Qualified',     color:'#A98FC0'},
+  {id:'booked',       label:'Booked',        color:'#2F7D59'},
+  {id:'lost',         label:'Lost',          color:'#9B7A7A'}
 ];
-NCF.stage = id => NCF.STAGES.find(s=>s.id===id) || NCF.STAGES[0];
+// other statuses the database can hold are shown in the nearest column
+NCF.STAGE_ALIAS = {
+  owner_call_required:'follow_up_due', awaiting_customer:'contacted',
+  needs_review:'qualified', tour_scheduled:'qualified',
+  proposal_sent:'qualified', negotiation:'qualified',
+  completed:'booked', archived:'lost'
+};
+NCF.col = st => NCF.STAGE_ALIAS[st] || st;
+NCF.stage = id => NCF.STAGES.find(s=>s.id===NCF.col(id)) || NCF.STAGES[0];
 
 NCF.SOURCES = {
   website:{label:'Website form', short:'W',  color:'#6B8CBF'},
@@ -477,6 +486,127 @@ function toast(msg){
 }
 </script>
 <script>
+
+/* ============================================================
+   LIVE CONNECTION
+   The workspace reads from /api/crm when it is configured, and
+   falls back to this browser's own storage when it is not. The
+   in-memory shape is identical either way, so every view below
+   works without knowing which one it is looking at.
+   ============================================================ */
+NCF.api = {
+  cfg(){
+    try { return JSON.parse(localStorage.getItem('ncf_api')||'{}'); } catch(e){ return {}; }
+  },
+  save(base, token){
+    localStorage.setItem('ncf_api', JSON.stringify({base:base.replace(/\/+$/,''), token}));
+  },
+  clear(){ localStorage.removeItem('ncf_api'); },
+  get live(){ const c=this.cfg(); return !!(c.base && c.token); },
+  url(path){ return this.cfg().base + path; },
+  headers(){ return {'Authorization':'Bearer '+this.cfg().token,'Content-Type':'application/json'}; },
+
+  async pull(){
+    const r = await fetch(this.url('/api/crm'), {headers:this.headers()});
+    if(!r.ok) throw new Error(r.status===401?'that token was rejected':'HTTP '+r.status);
+    return r.json();
+  },
+  async send(payload){
+    const r = await fetch(this.url('/api/crm'), {
+      method:'POST', headers:this.headers(), body:JSON.stringify(payload)});
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error || ('HTTP '+r.status));
+    return j;
+  }
+};
+
+/* map the API's rows onto the shape every view already expects */
+NCF.hydrate = function(data){
+  const db = NCF.store.all();
+  db.contacts = [];
+  const seen = new Set();
+  db.leads = (data.leads||[]).map(r=>{
+    if(!seen.has(r.contact_id)){
+      seen.add(r.contact_id);
+      db.contacts.push({
+        id:r.contact_id, name:r.full_name, email:r.email||'', phone:r.phone||'',
+        language:r.language||'en', consent_email:!!r.consent_email,
+        consent_whatsapp:!!r.consent_whatsapp, notes:r.contact_notes||'',
+        created_at:r.created_at
+      });
+    }
+    return {
+      id:r.id, contact_id:r.contact_id, stage:r.status,
+      event_type:r.event_type||'', event_date:r.event_date?String(r.event_date).slice(0,10):'',
+      guests:r.guests||0, source:r.source||'website', message:r.message||'',
+      preferences:'', budget_band:r.budget_band||'', priority:r.priority,
+      score:r.score, follow_up:r.next_follow_up_at?String(r.next_follow_up_at).slice(0,10):'',
+      automation_paused:!!r.automation_paused,
+      quote:NCF.blankQuote(), created_at:r.created_at, updated_at:r.updated_at,
+      stage_history:[]
+    };
+  });
+  db.notes = (data.notes||[]).map(n=>({
+    id:'n'+n.created_at, lead_id:n.lead_id, body:n.detail, at:n.created_at}));
+  db.events = (data.events||[]).map(e=>({
+    id:e.id, lead_id:e.lead_id, contact_id:null, title:e.title,
+    date:e.event_date?String(e.event_date).slice(0,10):'', start_time:e.start_time||'',
+    guests:e.guests||0, status:e.status, who:e.full_name}));
+  db.review_requests = (data.reviews||[]).map(r=>({
+    id:r.id, status:r.status, channel:r.channel, scheduled_for:r.scheduled_for,
+    sent_at:r.sent_at, reason:r.reason||'', who:r.full_name, event_title:r.event_title}));
+  db.tasks = data.tasks||[];
+  db.notifications = data.notifications||[];
+  db.brunch = data.brunch||[];
+  db.stats = data.stats||{};
+  db.fetched_at = data.fetched_at;
+  return db;
+};
+
+NCF.syncing = false;
+NCF.refresh = async function(quiet){
+  if(!NCF.api.live) return;
+  NCF.syncing = true; NCF.paintStatus();
+  try {
+    NCF.hydrate(await NCF.api.pull());
+    NCF.lastError = null;
+  } catch(e){
+    NCF.lastError = e.message;
+    if(!quiet) toast('Could not reach the website: '+e.message);
+  } finally {
+    NCF.syncing = false;
+    NCF.render();
+  }
+};
+
+/* every write goes to the server, then the view is rebuilt from what the
+   server actually holds — never from what we hoped it would hold */
+NCF.act = async function(payload, okMsg){
+  if(!NCF.api.live){ toast('Not connected to the website yet'); return false; }
+  try {
+    await NCF.api.send(payload);
+    if(okMsg) toast(okMsg);
+    await NCF.refresh(true);
+    return true;
+  } catch(e){
+    toast('Not saved: '+e.message);
+    return false;
+  }
+};
+
+NCF.paintStatus = function(){
+  const foot = document.getElementById('sideFoot');
+  if(foot) foot.innerHTML = NCF.api.live
+    ? '<b>Connected</b><br>Enquiries come straight from the website.'
+    : '<b>Local workspace</b><br>Records are stored in this browser only.';
+  const el = document.getElementById('connState'); if(!el) return;
+  if(!NCF.api.live){ el.innerHTML='<span class="tag t-mute"><span class="dot"></span>Local only</span>'; return; }
+  if(NCF.syncing){ el.innerHTML='<span class="tag t-info"><span class="dot"></span>Syncing…</span>'; return; }
+  if(NCF.lastError){ el.innerHTML='<span class="tag t-bad"><span class="dot"></span>'+esc(NCF.lastError)+'</span>'; return; }
+  const t = NCF.store.all().fetched_at;
+  el.innerHTML='<span class="tag t-ok"><span class="dot"></span>Live · '+(t?ago(t):'just now')+'</span>';
+};
+
 /* ============================================================
    PRICING ENGINE
    Defaults come from the venue's own terms (room 1 950 $,
@@ -551,7 +681,7 @@ NCF.createLead = function(d){
   const lead = {
     id:NCF.store.id('lead'),
     contact_id:contact.id,
-    stage:d.stage||'new',
+    stage:d.stage||'new_inquiry',
     event_type:d.event_type||'Wedding',
     event_date:d.event_date||'',
     guests:Number(d.guests)||0,
@@ -563,7 +693,7 @@ NCF.createLead = function(d){
     quote:d.quote||NCF.blankQuote(),
     created_at:new Date().toISOString(),
     updated_at:new Date().toISOString(),
-    stage_history:[{stage:d.stage||'new', at:new Date().toISOString()}],
+    stage_history:[{stage:d.stage||'new_inquiry', at:new Date().toISOString()}],
     demo:!!d.demo
   };
   NCF.store.table('leads').unshift(lead);
@@ -598,7 +728,7 @@ NCF.moveLead = function(id, stage){
 
 NCF.contact = id => NCF.store.table('contacts').find(c=>c.id===id) || {name:'Unknown',email:'',phone:''};
 NCF.leadValue = l => NCF.priceQuote(l.quote, l.event_date).total;
-NCF.leadsIn = s => NCF.store.table('leads').filter(l=>l.stage===s);
+NCF.leadsIn = s => NCF.store.table('leads').filter(l=>NCF.col(l.stage)===s);
 
 NCF.deleteLead = function(id){
   const db=NCF.store.all();
@@ -646,6 +776,8 @@ NCF.view='dash';
 NCF.VIEWS={
   dash:       {t:'Dashboard',            s:'An overview of the venue\'s enquiries'},
   inbox:      {t:'Inbox',                s:'Enquiries arriving from the website'},
+  calendar:   {t:'Calendar',             s:'Confirmed events and brunch services, by date'},
+  alerts:     {t:'Notifications',        s:'What has happened since you last looked'},
   leads:      {t:'Leads',                s:'Drag a card between columns to move it through the pipeline'},
   bookings:   {t:'Bookings & Events',    s:'Confirmed events and their status'},
   customers:  {t:'Customers',            s:'Everyone who has enquired, and their history'},
@@ -666,11 +798,14 @@ NCF.go=function(v){
 };
 NCF.render=function(){
   const db=NCF.store.all();
-  $('#pillLeads').textContent=db.leads.filter(l=>!['completed','lost'].includes(l.stage)).length;
+  $('#pillLeads').textContent=db.leads.filter(l=>!['booked','lost'].includes(NCF.col(l.stage))).length;
   const inboxN=(db.inbox||[]).filter(i=>!i.imported).length;
   const pi=$('#pillInbox');
   pi.textContent=inboxN; pi.style.display=inboxN?'grid':'none';
+  const al=(db.notifications||[]).filter(n=>!n.read_at).length;
+  const pa=$('#pillAlerts'); if(pa){ pa.textContent=al; pa.style.display=al?'grid':'none'; }
   $('#topActions').innerHTML=NCF.topActions();
+  NCF.paintStatus();
   $('#view').innerHTML=NCF['v_'+NCF.view](db);
   if(NCF['after_'+NCF.view]) NCF['after_'+NCF.view]();
 };
@@ -679,6 +814,8 @@ NCF.topActions=function(){
     return '<button class="btn btn-p" onclick="NCF.newLead()">+ New enquiry</button>';
   if(NCF.view==='settings')
     return '<button class="btn" onclick="NCF.exportJSON()">Export records</button>';
+  if(NCF.api.live)
+    return '<button class="btn" onclick="NCF.refresh()">Refresh</button>';
   return '';
 };
 
@@ -686,15 +823,15 @@ NCF.topActions=function(){
    DASHBOARD
    ============================================================ */
 NCF.v_dash=function(db){
-  const open=db.leads.filter(l=>!['completed','lost'].includes(l.stage));
-  const booked=db.leads.filter(l=>l.stage==='booked');
+  const open=db.leads.filter(l=>!['booked','lost'].includes(NCF.col(l.stage)));
+  const booked=db.leads.filter(l=>NCF.col(l.stage)==='booked');
   const pipelineValue=open.reduce((a,l)=>a+NCF.leadValue(l),0);
   const bookedValue=booked.reduce((a,l)=>a+NCF.leadValue(l),0);
   const now=new Date(); const soon=new Date(Date.now()+30*864e5);
   const upcoming=db.events.filter(e=>e.date && new Date(e.date+'T12:00:00')>=now)
     .sort((a,b)=>a.date.localeCompare(b.date));
   const overdue=open.filter(l=>l.follow_up && new Date(l.follow_up+'T23:59:59')<now);
-  const newCount=db.leads.filter(l=>l.stage==='new').length;
+  const newCount=db.leads.filter(l=>NCF.col(l.stage)==='new_inquiry').length;
 
   if(!db.leads.length) return NCF.emptyFirstRun();
 
@@ -704,7 +841,11 @@ NCF.v_dash=function(db){
     ${NCF.kpi('Open pipeline', open.length, money(pipelineValue)+' in play')}
     ${NCF.kpi('Booked', booked.length, money(bookedValue)+' confirmed')}
     ${NCF.kpi('Upcoming events', upcoming.filter(e=>new Date(e.date+'T12:00:00')<=soon).length,'In the next 30 days')}
-    ${NCF.kpi('Follow-ups due', overdue.length, overdue.length?'Past their date':'All on schedule')}
+    ${NCF.kpi('Calls to make', (db.stats&&db.stats.calls_due)||overdue.length,
+        ((db.stats&&db.stats.calls_due)>0)?'Open since the 30-minute mark':'Nothing waiting')}
+    ${db.stats?NCF.kpi('Review invitations', db.stats.reviews_total,
+        db.stats.reviews_sent+' sent · '+db.stats.reviews_scheduled+' scheduled · '+
+        db.stats.reviews_blocked+' blocked'):''}
   </div>
   <div class="grid2">
     <div class="card">
@@ -818,7 +959,7 @@ NCF.filtered=function(db){
 NCF.board=function(db){
   const ls=NCF.filtered(db);
   return `<div class="kan-scroll"><div class="kan">${NCF.STAGES.map(s=>{
-    const items=ls.filter(l=>l.stage===s.id);
+    const items=ls.filter(l=>NCF.col(l.stage)===s.id);
     const val=items.reduce((a,l)=>a+NCF.leadValue(l),0);
     return `<section class="col" data-stage="${s.id}">
       <div class="col-h">
@@ -960,9 +1101,15 @@ NCF.startDrag=function(e, card, touch){
     const stage=lastCol && lastCol.dataset.stage;
     if(stage){
       const l=NCF.store.table('leads').find(x=>x.id===id);
-      if(l && l.stage!==stage){
-        NCF.moveLead(id, stage);
-        toast(NCF.contact(l.contact_id).name+' → '+NCF.stage(stage).label);
+      if(l && NCF.col(l.stage)!==stage){
+        if(NCF.api.live){
+          const who=NCF.contact(l.contact_id).name;
+          l.stage=stage;                                   // optimistic, confirmed by the refresh
+          NCF.act({action:'lead.stage', id:id, status:stage}, who+' → '+NCF.stage(stage).label);
+        } else {
+          NCF.moveLead(id, stage);
+          toast(NCF.contact(l.contact_id).name+' → '+NCF.stage(stage).label);
+        }
       }
     }
     NCF.render();
@@ -1171,7 +1318,11 @@ NCF.rmLine=function(id){
 NCF.setStage=function(st){
   if(!NCF.openId) return;
   NCF.saveLead(true);
-  NCF.moveLead(NCF.openId, st);
+  if(NCF.api.live){
+    const l=NCF.store.table('leads').find(x=>x.id===NCF.openId);
+    if(l) l.stage=st;
+    NCF.act({action:'lead.stage', id:NCF.openId, status:st}, 'Moved to '+NCF.stage(st).label);
+  } else NCF.moveLead(NCF.openId, st);
   const l=NCF.store.table('leads').find(x=>x.id===NCF.openId);
   $$('.stage-pick button').forEach(b=>{
     const on=b.dataset.st===st;
@@ -1203,6 +1354,15 @@ NCF.saveLead=function(quiet){
   const ev=NCF.store.table('events').find(e=>e.lead_id===l.id);
   if(ev){ ev.date=l.event_date; ev.title=c.name+' — '+l.event_type; }
   NCF.store.saveNow();
+  if(NCF.api.live){
+    NCF.act({action:'contact.update', id:c.id, fields:{
+      full_name:c.name, email:c.email, phone:c.phone, language:c.language}});
+    NCF.act({action:'lead.update', id:l.id, fields:{
+      event_type:l.event_type, event_date:l.event_date||null,
+      guests:l.guests, message:l.message}}, quiet?null:'Saved');
+    if(!quiet){ NCF.closeDrawer(); }
+    return;
+  }
   if(!quiet){ toast('Saved'); NCF.render(); NCF.closeDrawer(); }
 };
 NCF.askDelete=function(){
@@ -1212,8 +1372,15 @@ NCF.askDelete=function(){
 };
 NCF.pushNote=function(){
   const i=$('#noteIn'); if(!i||!i.value.trim()) return;
-  NCF.addNote(NCF.openId,i.value); i.value='';
-  $('#noteList').innerHTML=NCF.noteList(NCF.openId);
+  const body=i.value; i.value='';
+  if(NCF.api.live){
+    NCF.act({action:'note.add', id:NCF.openId, body}, 'Note saved').then(()=>{
+      const n=$('#noteList'); if(n) n.innerHTML=NCF.noteList(NCF.openId);
+    });
+  } else {
+    NCF.addNote(NCF.openId, body);
+    $('#noteList').innerHTML=NCF.noteList(NCF.openId);
+  }
 };
 NCF.noteList=function(id){
   const ns=NCF.notesFor(id);
@@ -1222,7 +1389,7 @@ NCF.noteList=function(id){
     <div class="nb">${esc(n.body)}</div></div>`).join('');
 };
 NCF.newLead=function(){
-  const l=NCF.createLead({name:'', source:'manual', stage:'new'});
+  const l=NCF.createLead({name:'', source:'manual', stage:'new_inquiry'});
   NCF.render(); NCF.openLead(l.id);
   setTimeout(()=>{const n=$('#f_name'); if(n) n.focus();},420);
 };
@@ -1272,6 +1439,112 @@ NCF.printQuote=function(){
 /* ============================================================
    REMAINING VIEWS
    ============================================================ */
+
+NCF.calMonth = null;
+NCF.v_calendar=function(db){
+  const base = NCF.calMonth ? new Date(NCF.calMonth+'-01T12:00:00') : new Date();
+  const y=base.getFullYear(), m=base.getMonth();
+  const key=(d)=>d.toISOString().slice(0,10);
+  const first=new Date(y,m,1), start=new Date(first);
+  start.setDate(1-((first.getDay()+6)%7));            // weeks start Monday
+  const byDay={};
+  (db.events||[]).forEach(e=>{ if(!e.date) return; (byDay[e.date]=byDay[e.date]||[]).push(
+    {kind:'event', label:e.who||e.title, sub:e.status, color:e.status==='completed'?'#6F4E92':'#2F7D59', lead:e.lead_id}); });
+  (db.leads||[]).forEach(l=>{ if(!l.event_date||NCF.col(l.stage)==='lost'||NCF.col(l.stage)==='booked') return;
+    (byDay[l.event_date]=byDay[l.event_date]||[]).push(
+    {kind:'lead', label:NCF.contact(l.contact_id).name, sub:'enquiry', color:'#A98FC0', lead:l.id}); });
+  (db.brunch||[]).forEach(b=>{ const d=String(b.service_date).slice(0,10);
+    (byDay[d]=byDay[d]||[]).push({kind:'brunch', label:'Brunch '+b.seating,
+      sub:b.taken+'/'+b.capacity, color:'#C2A15E'}); });
+
+  const mName=first.toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+  const prev=new Date(y,m-1,1).toISOString().slice(0,7);
+  const next=new Date(y,m+1,1).toISOString().slice(0,7);
+  let cells='';
+  for(let i=0;i<42;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const k=key(d), inMonth=d.getMonth()===m, today=k===new Date().toISOString().slice(0,10);
+    const items=byDay[k]||[];
+    cells+=`<div style="min-height:92px;padding:6px 7px;border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);background:${today?'var(--lilac-mist)':(inMonth?'var(--white)':'var(--cream)')};
+      opacity:${inMonth?1:.5}">
+      <div style="font-size:11px;font-weight:${today?700:500};color:${today?'var(--violet)':'var(--muted)'};
+        margin-bottom:4px">${d.getDate()}</div>
+      ${items.slice(0,3).map(it=>`<div ${it.lead?`onclick="NCF.openLead('${it.lead}')" style="cursor:pointer;"`:'style="'}
+        padding:2px 5px;margin-bottom:3px;border-radius:4px;font-size:10.5px;line-height:1.3;
+        background:${it.color}1a;color:${it.color};font-weight:600;overflow:hidden;
+        text-overflow:ellipsis;white-space:nowrap" title="${esc(it.label)} — ${esc(it.sub)}">${esc(it.label)}</div>`).join('')}
+      ${items.length>3?`<div style="font-size:10px;color:var(--muted)">+${items.length-3} more</div>`:''}
+    </div>`;
+  }
+  return `
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-sm" onclick="NCF.calGo('${prev}')">←</button>
+    <b style="font-family:var(--serif);font-size:19px">${mName}</b>
+    <button class="btn btn-sm" onclick="NCF.calGo('${next}')">→</button>
+    <button class="btn btn-sm" onclick="NCF.calGo(null)">Today</button>
+    <span style="margin-left:auto;display:flex;gap:12px;font-size:11.5px;color:var(--muted);flex-wrap:wrap">
+      <span><span class="dot" style="color:#2F7D59"></span> Confirmed event</span>
+      <span><span class="dot" style="color:#A98FC0"></span> Enquiry date</span>
+      <span><span class="dot" style="color:#C2A15E"></span> Brunch</span>
+    </span>
+  </div>
+  <div class="card" style="overflow:hidden">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr)">
+      ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>
+        `<div style="padding:9px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+          color:var(--muted);font-weight:700;background:var(--lilac-mist);
+          border-right:1px solid var(--line);border-bottom:1px solid var(--line)">${d}</div>`).join('')}
+      ${cells}
+    </div>
+  </div>`;
+};
+NCF.calGo=function(ym){ NCF.calMonth=ym; NCF.render(); };
+
+NCF.v_alerts=function(db){
+  const ns=db.notifications||[], tasks=db.tasks||[];
+  const unread=ns.filter(n=>!n.read_at);
+  return `
+  ${tasks.length?`<div class="card" style="margin-bottom:18px">
+    <div class="card-h"><h3>Calls to make</h3>
+      <span class="tag t-warn" style="margin-left:auto">${tasks.length}</span></div>
+    <div class="card-b" style="padding:0">
+      ${tasks.map(t=>`<div style="padding:13px 18px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+          <b style="font-size:13.5px;color:var(--violet-deep)">${esc(t.title)}</b>
+          <span class="tag ${t.priority==='urgent'?'t-bad':'t-warn'}" style="font-size:10px">${esc(t.priority)}</span>
+          <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">${t.due_at?ago(t.due_at):''}</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:4px">${esc(t.detail)}</div>
+        <div style="font-size:11.5px;color:var(--sage-deep);margin-top:4px">${esc(t.reason)}</div>
+        <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
+          ${t.lead_id?`<button class="btn btn-sm" onclick="NCF.openLead('${t.lead_id}')">Open lead</button>`:''}
+          <button class="btn btn-p btn-sm" onclick="NCF.act({action:'task.done',id:'${t.id}'},'Marked done')">Mark done</button>
+          <button class="btn btn-sm" onclick="NCF.act({action:'task.snooze',id:'${t.id}',minutes:60},'Back in an hour')">Snooze 1h</button>
+        </div>
+      </div>`).join('')}
+    </div></div>`:''}
+  <div class="card">
+    <div class="card-h"><h3>Notifications</h3>
+      ${unread.length?`<button class="btn btn-sm" style="margin-left:auto"
+        onclick="NCF.act({action:'notif.read',all:true},'All marked read')">Mark all read</button>`:''}</div>
+    <div class="card-b" style="padding:0">
+      ${ns.length? ns.map(n=>`<div style="padding:12px 18px;border-bottom:1px solid var(--line);
+        display:flex;gap:11px;align-items:flex-start;${n.read_at?'opacity:.55':''}">
+        <span class="dot" style="margin-top:7px;color:${n.severity==='warn'?'var(--warn)':n.severity==='error'?'var(--bad)':'var(--sage)'}"></span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600">${esc(n.title)}</div>
+          <div style="font-size:12.3px;color:var(--muted);margin-top:2px">${esc(n.body)}</div>
+        </div>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap">${ago(n.created_at)}</span>
+        ${n.lead_id?`<button class="btn btn-sm" onclick="NCF.openLead('${n.lead_id}')">Open</button>`:''}
+        ${!n.read_at?`<button class="btn btn-sm" onclick="NCF.act({action:'notif.read',id:'${n.id}'})">✓</button>`:''}
+      </div>`).join('')
+      : '<div class="empty"><p>Nothing yet. New enquiries and brunch requests appear here.</p></div>'}
+    </div>
+  </div>`;
+};
+
 NCF.v_customers=function(db){
   if(!db.contacts.length) return NCF.emptyFirstRun();
   return `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
@@ -1643,11 +1916,53 @@ NCF.v_settings=function(db){
       </div>
     </div>
   </div>
+  <div class="card" style="margin-top:18px">
+    <div class="card-h"><h3>Connection to the website</h3>
+      <span style="margin-left:auto" id="connState2"></span></div>
+    <div class="card-b">
+      <div class="row2">
+        <label class="field"><label>Website address</label>
+          <input class="inp" id="cfgBase" placeholder="https://nathancafefloral.com"
+            value="${esc(NCF.api.cfg().base||'')}"></label>
+        <label class="field"><label>Access token</label>
+          <input class="inp" id="cfgToken" type="password" placeholder="CRM_READ_TOKEN"
+            value="${esc(NCF.api.cfg().token||'')}"></label>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="NCF.connect()">Connect</button>
+        <button class="btn" onclick="NCF.disconnect()">Work offline</button>
+      </div>
+      <div class="hint" style="margin-top:9px">The token is the <code>CRM_READ_TOKEN</code>
+        set in Vercel. It stays in this browser and is sent only to your own website.</div>
+    </div>
+  </div>
   <div class="banner b-warn" style="margin-top:18px"><span>⚠</span><span>
     <b>This build is a working front end, not a production system.</b> It has no server,
     no sign-in and no shared database, so treat it as the owner's own working copy on one
     machine until the backend in <b>Integrations</b> is in place.</span></div>`;
 };
+
+NCF.connect=async function(){
+  const base=$('#cfgBase').value.trim(), token=$('#cfgToken').value.trim();
+  if(!base||!token){ toast('Both the address and the token are needed'); return; }
+  NCF.api.save(base, token);
+  const el=$('#connState2'); if(el) el.innerHTML='<span class="tag t-info">Checking…</span>';
+  try {
+    NCF.hydrate(await NCF.api.pull());
+    NCF.lastError=null;
+    toast('Connected — showing live enquiries');
+    NCF.go('dash');
+  } catch(e){
+    NCF.lastError=e.message;
+    if(el) el.innerHTML='<span class="tag t-bad">'+esc(e.message)+'</span>';
+    toast('Could not connect: '+e.message);
+  }
+};
+NCF.disconnect=function(){
+  NCF.api.clear(); NCF.lastError=null; NCF.store.reset(); NCF.render();
+  toast('Working from this browser only');
+};
+
 NCF.saveTax=function(){
   const s=NCF.store.all().settings;
   s.gst=Number($('#t_gst').value)||0;
@@ -1728,7 +2043,7 @@ NCF.importItem=function(itemId){
     guests:Number(L.guests)||0,
     source:L.source||'website',
     message:L.message||'',
-    stage:'new'
+    stage:'new_inquiry'
   });
   it.imported=true; it.lead_id=lead.id;
   NCF.store.saveNow();
@@ -1914,7 +2229,7 @@ NCF.seed=function(){
   const rows=[
     {name:'SAMPLE — Marie Dupont', email:'sample.marie@example.com', phone:'514-555-0101',
      language:'fr', event_type:'Wedding', event_date:d(62), guests:44, source:'website',
-     stage:'new', message:'Nous cherchons une salle pour un mariage intime.'},
+     stage:'new_inquiry', message:'Nous cherchons une salle pour un mariage intime.'},
     {name:'SAMPLE — Alexandre Tremblay', email:'sample.alex@example.com', phone:'514-555-0102',
      language:'fr', event_type:'Corporate', event_date:d(28), guests:30, source:'whatsapp',
      stage:'contacted', message:'Soirée d\'équipe, 30 personnes.'},
@@ -1923,16 +2238,16 @@ NCF.seed=function(){
      stage:'qualified', message:'40th birthday, evening, bar service.'},
     {name:'SAMPLE — Jade Rousseau', email:'sample.jade@example.com', phone:'514-555-0104',
      language:'fr', event_type:'Bridal shower', event_date:d(40), guests:35, source:'phone',
-     stage:'visit', message:'Visite prévue.'},
+     stage:'qualified', message:'Visite prévue.'},
     {name:'SAMPLE — Daniel Okonkwo', email:'sample.daniel@example.com', phone:'514-555-0105',
      language:'en', event_type:'Engagement', event_date:d(75), guests:50, source:'website',
-     stage:'proposal', message:'Engagement party, proposal sent.'},
+     stage:'qualified', message:'Engagement party, proposal sent.'},
     {name:'SAMPLE — Lina Haddad', email:'sample.lina@example.com', phone:'514-555-0106',
      language:'en', event_type:'Wedding', event_date:d(12), guests:48, source:'website',
      stage:'booked', message:'Deposit paid, confirmed.'},
     {name:'SAMPLE — Chloé Bergeron', email:'sample.chloe@example.com', phone:'514-555-0107',
      language:'fr', event_type:'Baby shower', event_date:d(-9), guests:28, source:'ai',
-     stage:'completed', message:'Événement passé.'},
+     stage:'booked', message:'Événement passé.'},
     {name:'SAMPLE — Victor Nunes', email:'sample.victor@example.com', phone:'514-555-0108',
      language:'en', event_type:'Corporate', event_date:d(34), guests:70, source:'website',
      stage:'lost', message:'Needed 70 seated — above capacity.'}
@@ -1957,7 +2272,7 @@ NCF.seed=function(){
       if(ev) NCF.scheduleReview(ev);
     }
   });
-  NCF.store.table('leads').forEach(l=>{ if(l.demo && l.stage==='new') l.follow_up=d(-2); });
+  NCF.store.table('leads').forEach(l=>{ if(l.demo && l.stage==='new_inquiry') l.follow_up=d(-2); });
   NCF.store.saveNow();
   NCF.store.log('system','Sample records loaded');
   NCF.render();
@@ -1992,6 +2307,12 @@ NCF.seed=function(){
     r.readAsText(f);
   });
   NCF.go('dash');
+  if(NCF.api.live){
+    NCF.refresh(true);
+    // a quiet poll so a new enquiry appears without her reloading the page
+    setInterval(()=>{ if(!document.hidden && !NCF.syncing) NCF.refresh(true); }, 60000);
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) NCF.refresh(true); });
+  }
 })();
 </script>
 </body>
