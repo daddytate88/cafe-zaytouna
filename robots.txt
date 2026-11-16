@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://cafe-zaytouna.vercel.app/sitemap.xml
+Disallow: /crm
+Disallow: /api

@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Nathan Café Floral — Owner CRM</title>
+<style>
+:root{
+  --ivory:#F7F3EB; --cream:#EFEAF1; --white:#FDFBF7;
+  --violet:#493269; --violet-soft:#6B5685; --violet-deep:#2E1F44;
+  --lilac:#D3C7DB; --lilac-soft:#EAE6EC; --lilac-mist:#F4F1F6;
+  --sage:#A98FC0; --sage-deep:#6F4E92;
+  --taupe:#A5876D; --taupe-soft:#C3AE97;
+  --ink:#241733; --muted:#7A6B8C; --line:#E3DCE8;
+  --ok:#2F7D59; --ok-bg:#E6F2EC;
+  --warn:#9A6B1F; --warn-bg:#FAF0DC;
+  --bad:#9B3B3B; --bad-bg:#F8E8E8;
+  --info:#3A5C8C; --info-bg:#E8EEF7;
+  --r:12px; --r-sm:8px;
+  --shadow:0 1px 2px rgba(46,31,68,.05),0 8px 24px -16px rgba(46,31,68,.3);
+  --shadow-lg:0 2px 6px rgba(46,31,68,.07),0 22px 48px -28px rgba(46,31,68,.45);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --sidebar:248px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--sans);background:var(--ivory);color:var(--ink);
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:var(--violet)}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.01em}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--lilac);border-radius:8px;border:3px solid var(--ivory)}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------------- shell ---------------- */
+.app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}
+.side{background:var(--violet-deep);color:#EFE9F3;display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.09)}
+.brand b{display:block;font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:.01em;color:#fff}
+.brand span{display:block;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--lilac);margin-top:5px}
+.nav{padding:12px 10px;flex:1}
+.nav-group{margin-bottom:16px}
+.nav-label{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(211,199,219,.55);padding:8px 12px 6px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;
+  border-radius:var(--r-sm);color:#D9D0E2;font-size:13.5px;text-align:left;
+  transition:background .18s,color .18s}
+.nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav button.on{background:var(--violet);color:#fff;font-weight:500}
+.nav button .ic{width:17px;height:17px;flex:0 0 17px;opacity:.9}
+.nav .pill{margin-left:auto;background:var(--sage);color:var(--violet-deep);
+  font-size:10.5px;font-weight:700;min-width:19px;height:19px;border-radius:10px;
+  display:grid;place-items:center;padding:0 6px}
+.side-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.09);font-size:11px;
+  color:rgba(211,199,219,.65)}
+.side-foot b{color:#fff;font-weight:600}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:30;background:rgba(247,243,235,.92);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:14px 26px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top h1{font-size:19px}
+.top .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.top .spacer{flex:1}
+.wrap{padding:22px 26px 80px;max-width:1500px;width:100%}
+
+/* ---------------- controls ---------------- */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--white);
+  color:var(--ink);transition:transform .2s var(--ease),box-shadow .2s,background .2s,border-color .2s}
+.btn:hover{border-color:var(--lilac);box-shadow:var(--shadow)}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--violet);border-color:var(--violet);color:#fff}
+.btn-p:hover{background:var(--violet-soft);border-color:var(--violet-soft)}
+.btn-d{background:var(--bad-bg);border-color:#EFD4D4;color:var(--bad)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-icon{padding:7px;width:32px;height:32px;justify-content:center}
+.field{display:block;margin-bottom:13px}
+.field > label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:5px;font-weight:600}
+.inp,select.inp,textarea.inp{width:100%;padding:9px 11px;border:1px solid var(--line);
+  border-radius:var(--r-sm);background:var(--white);font-size:13.5px;
+  transition:border-color .2s,box-shadow .2s}
+.inp:focus{outline:0;border-color:var(--sage);box-shadow:0 0 0 3px rgba(169,143,192,.18)}
+textarea.inp{min-height:84px;resize:vertical;line-height:1.55}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A6B8C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;padding-right:30px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 13px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 13px}
+.hint{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow)}
+.card-h{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;
+  align-items:center;gap:10px}
+.card-h h3{font-size:14.5px}
+.card-b{padding:18px}
+
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.t-ok{background:var(--ok-bg);color:var(--ok)}
+.t-warn{background:var(--warn-bg);color:var(--warn)}
+.t-bad{background:var(--bad-bg);color:var(--bad)}
+.t-info{background:var(--info-bg);color:var(--info)}
+.t-mute{background:var(--lilac-soft);color:var(--violet-soft)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 7px}
+
+.banner{display:flex;gap:11px;align-items:flex-start;padding:12px 15px;border-radius:var(--r-sm);
+  font-size:12.8px;line-height:1.5;margin-bottom:18px;border:1px solid}
+.banner b{font-weight:600}
+.b-warn{background:var(--warn-bg);border-color:#EBD9B4;color:#6B4A14}
+.b-info{background:var(--info-bg);border-color:#D2DEEF;color:#2C4669}
+.banner .x{margin-left:auto;opacity:.6;font-size:16px;line-height:1;padding:0 2px}
+</style>
+<style>
+/* ---------------- dashboard ---------------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:13px;margin-bottom:20px}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;
+  box-shadow:var(--shadow);transition:transform .25s var(--ease),box-shadow .25s}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi .k{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--serif);font-size:31px;font-weight:600;line-height:1.1;margin-top:7px;
+  color:var(--violet);font-variant-numeric:tabular-nums}
+.kpi .m{font-size:11.5px;color:var(--muted);margin-top:3px}
+.grid2{display:grid;grid-template-columns:1.45fr 1fr;gap:18px;align-items:start}
+@media(max-width:1080px){.grid2{grid-template-columns:1fr}}
+
+/* ---------------- table ---------------- */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r)}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--white)}
+.tbl th{text-align:left;padding:10px 14px;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line);
+  white-space:nowrap;background:var(--lilac-mist)}
+.tbl th.sortable{cursor:pointer;user-select:none}
+.tbl th.sortable:hover{color:var(--violet)}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tbody tr{cursor:pointer;transition:background .15s}
+.tbl tbody tr:hover{background:var(--lilac-mist)}
+.tbl .nm{font-weight:600;color:var(--violet-deep)}
+.tbl .sm{font-size:11.5px;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------------- kanban ---------------- */
+.kan-scroll{overflow-x:auto;padding-bottom:14px;margin:0 -26px;padding-left:26px;padding-right:26px}
+.kan{display:flex;gap:13px;align-items:flex-start;min-height:60vh}
+.col{flex:0 0 272px;width:272px;background:var(--cream);border:1px solid var(--line);
+  border-radius:var(--r);display:flex;flex-direction:column;min-height:380px;max-height:calc(100vh - 230px);
+  transition:background .2s,border-color .2s,box-shadow .2s}
+.col.over{background:var(--lilac-soft);border-color:var(--sage);
+  box-shadow:0 0 0 3px rgba(169,143,192,.2) inset}
+.col-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;
+  position:sticky;top:0;background:inherit;border-radius:var(--r) var(--r) 0 0;z-index:2}
+.col-h .sw{width:9px;height:9px;border-radius:3px;flex:0 0 9px}
+.col-h b{font-size:12.5px;font-weight:600;letter-spacing:.01em}
+.col-h .ct{margin-left:auto;font-size:11px;font-weight:700;color:var(--muted);
+  background:var(--white);border:1px solid var(--line);border-radius:10px;padding:1px 7px;
+  font-variant-numeric:tabular-nums}
+.col-b{padding:10px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;flex:1;min-height:300px}
+.col-val{padding:8px 13px 11px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line)}
+.col-val b{color:var(--violet);font-variant-numeric:tabular-nums}
+
+.lead{background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:11px 12px;box-shadow:0 1px 2px rgba(46,31,68,.05);cursor:grab;
+  transition:box-shadow .2s,transform .2s var(--ease),border-color .2s;
+  touch-action:manipulation;user-select:none}
+.lead:hover{box-shadow:var(--shadow-lg);border-color:var(--lilac)}
+.lead:active{cursor:grabbing}
+.lead.dragging{opacity:.42;transform:rotate(-1.4deg) scale(.98)}
+.lead.ghost{position:fixed;z-index:999;pointer-events:none;width:248px;
+  box-shadow:0 18px 44px -14px rgba(46,31,68,.55);transform:rotate(-2deg) scale(1.03);
+  opacity:.97;cursor:grabbing}
+.lead .ln{font-weight:600;font-size:13.5px;color:var(--violet-deep);
+  display:flex;align-items:center;gap:6px}
+.lead .lt{font-size:11.5px;color:var(--muted);margin-top:3px}
+.lead .lmeta{display:flex;gap:6px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.lead .lv{margin-left:auto;font-size:12px;font-weight:700;color:var(--violet);
+  font-variant-numeric:tabular-nums}
+.lead .src{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;
+  font-size:8.5px;font-weight:800;color:#fff;flex:0 0 16px}
+.drop-line{height:2px;background:var(--sage);border-radius:2px;margin:1px 0}
+
+/* ---------------- drawer ---------------- */
+.scrim{position:fixed;inset:0;background:rgba(46,31,68,.4);z-index:80;opacity:0;
+  pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px)}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--ivory);
+  z-index:90;transform:translateX(102%);transition:transform .42s var(--ease);
+  display:flex;flex-direction:column;box-shadow:-20px 0 60px -30px rgba(46,31,68,.6)}
+.drawer.on{transform:none}
+.dw-h{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;
+  align-items:flex-start;gap:12px;background:var(--white)}
+.dw-h h3{font-family:var(--serif);font-size:21px;font-weight:600}
+.dw-h .sub{font-size:12px;color:var(--muted);margin-top:3px}
+.dw-b{flex:1;overflow-y:auto;padding:18px 20px 40px}
+.dw-f{padding:13px 20px;border-top:1px solid var(--line);display:flex;gap:9px;
+  background:var(--white);flex-wrap:wrap}
+.sect{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-deep);
+  font-weight:700;margin:22px 0 11px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.sect:first-child{margin-top:0}
+.stage-pick{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.stage-pick button{padding:6px 10px;border-radius:20px;font-size:11.5px;font-weight:600;
+  border:1px solid var(--line);background:var(--white);color:var(--muted);transition:all .2s}
+.stage-pick button:hover{border-color:var(--sage)}
+.stage-pick button.on{color:#fff;border-color:transparent}
+
+.note{background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:10px 12px;margin-bottom:8px}
+.note .nh{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:5px}
+.note .nb{font-size:13px;line-height:1.5;white-space:pre-wrap}
+
+/* ---------------- quote ---------------- */
+.q-lines{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;background:var(--white)}
+.q-line{display:grid;grid-template-columns:1fr 92px 84px 34px;gap:8px;align-items:center;
+  padding:8px 10px;border-bottom:1px solid var(--line)}
+.q-line:last-child{border-bottom:0}
+.q-line input{border:1px solid transparent;background:transparent;padding:6px 8px;
+  border-radius:6px;width:100%;font-size:13px}
+.q-line input:hover{border-color:var(--line)}
+.q-line input:focus{outline:0;border-color:var(--sage);background:var(--white)}
+.q-line input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+.q-line .amt{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;font-size:13px}
+.q-line .rm{opacity:.35;font-size:15px;line-height:1;transition:opacity .2s}
+.q-line .rm:hover{opacity:1;color:var(--bad)}
+.q-tot{margin-top:14px;background:var(--white);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:4px 14px}
+.q-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;
+  border-bottom:1px solid var(--line);font-size:13px}
+.q-row:last-child{border-bottom:0}
+.q-row span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+.q-row.grand{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--violet);padding:12px 0}
+.q-row.sub{color:var(--muted);font-size:12px}
+.q-row.hl span:last-child{color:var(--sage-deep)}
+
+.empty{text-align:center;padding:52px 24px;color:var(--muted)}
+.empty .big{font-family:var(--serif);font-size:23px;color:var(--violet);margin-bottom:8px}
+.empty p{max-width:430px;margin:0 auto 18px;font-size:13.5px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,24px);background:var(--violet-deep);
+  color:#fff;padding:11px 19px;border-radius:30px;font-size:13px;z-index:200;opacity:0;
+  pointer-events:none;transition:all .35s var(--ease);box-shadow:var(--shadow-lg)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+.burger{display:none}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:260px;height:100dvh;z-index:100;
+    transform:translateX(-102%);transition:transform .35s var(--ease)}
+  .side.on{transform:none}
+  .burger{display:inline-flex}
+  .wrap{padding:16px 15px 90px}
+  .top{padding:12px 15px}
+  .kan-scroll{margin:0 -15px;padding-left:15px;padding-right:15px}
+  .col{flex:0 0 250px;width:250px;max-height:none}
+  .row2,.row3{grid-template-columns:1fr}
+  .drawer{width:100%}
+  .q-line{grid-template-columns:1fr 74px 72px 28px}
+}
+@media print{
+  .side,.top,.dw-f,.no-print{display:none!important}
+  .app{grid-template-columns:1fr}
+  .drawer{position:static;transform:none;box-shadow:none;width:100%}
+  .scrim{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand">
+      <b>Nathan Café Floral</b>
+      <span>Owner CRM</span>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-group">
+        <div class="nav-label">Pipeline</div>
+        <button data-view="dash"><span class="ic">▣</span> Dashboard</button>
+        <button data-view="inbox"><span class="ic">⇩</span> Inbox <span class="pill" id="pillInbox">0</span></button>
+        <button data-view="leads"><span class="ic">◈</span> Leads <span class="pill" id="pillLeads">0</span></button>
+        <button data-view="bookings"><span class="ic">◆</span> Bookings &amp; Events</button>
+        <button data-view="customers"><span class="ic">◉</span> Customers</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Operations</div>
+        <button data-view="quotes"><span class="ic">$</span> Quotes &amp; Pricing</button>
+        <button data-view="reviews"><span class="ic">★</span> Review Follow-ups</button>
+        <button data-view="kb"><span class="ic">≡</span> Knowledge Base</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">System</div>
+        <button data-view="integrations"><span class="ic">⚯</span> Integrations</button>
+        <button data-view="settings"><span class="ic">⚙</span> Settings &amp; Data</button>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <b>Local workspace</b><br>
+      Records are stored in this browser only.
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <button class="btn btn-icon burger" id="burger" aria-label="Menu">☰</button>
+      <div>
+        <h1 id="vTitle">Dashboard</h1>
+        <div class="sub" id="vSub">An overview of the venue's enquiries</div>
+      </div>
+      <div class="spacer"></div>
+      <div id="topActions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </header>
+    <div class="wrap" id="view"></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dw-h">
+    <div style="flex:1;min-width:0">
+      <h3 id="dwTitle">—</h3>
+      <div class="sub" id="dwSub"></div>
+    </div>
+    <button class="btn btn-icon" id="dwClose" aria-label="Close">✕</button>
+  </div>
+  <div class="dw-b" id="dwBody"></div>
+  <div class="dw-f" id="dwFoot"></div>
+</aside>
+
+<div class="toast" id="toast"></div>
+<script>
+/* ============================================================
+   NATHAN CAFÉ FLORAL — OWNER CRM
+   ------------------------------------------------------------
+   STORAGE: this build runs on a local driver (browser storage).
+   Every read and write goes through NCF.store, so moving to
+   Supabase/Postgres means replacing that one object — nothing
+   else in this file talks to storage directly. Table and column
+   names below already match the agreed schema.
+   ============================================================ */
+const NCF = {};
+
+/* ---------- stages ---------- */
+NCF.STAGES = [
+  {id:'new',       label:'New inquiry',    color:'#6B8CBF'},
+  {id:'contacted', label:'Contacted',      color:'#7E6BA8'},
+  {id:'qualified', label:'Qualified',      color:'#A98FC0'},
+  {id:'visit',     label:'Visit scheduled',color:'#C2A15E'},
+  {id:'proposal',  label:'Proposal sent',  color:'#C98A5B'},
+  {id:'booked',    label:'Booked',         color:'#2F7D59'},
+  {id:'completed', label:'Completed',      color:'#6F4E92'},
+  {id:'lost',      label:'Lost',           color:'#9B7A7A'}
+];
+NCF.stage = id => NCF.STAGES.find(s=>s.id===id) || NCF.STAGES[0];
+
+NCF.SOURCES = {
+  website:{label:'Website form', short:'W',  color:'#6B8CBF'},
+  ai:     {label:'AI concierge', short:'AI', color:'#A98FC0'},
+  whatsapp:{label:'WhatsApp',    short:'WA', color:'#2F7D59'},
+  phone:  {label:'Phone',        short:'P',  color:'#C2A15E'},
+  walkin: {label:'Walk-in',      short:'WI', color:'#C98A5B'},
+  manual: {label:'Added by hand',short:'M',  color:'#7A6B8C'}
+};
+NCF.EVENT_TYPES = ['Wedding','Engagement','Birthday','Baby shower','Bridal shower',
+  'Corporate','Graduation','Memorial','Brunch group','Other'];
+
+/* ---------- verified business facts (editable in Knowledge Base) ---------- */
+NCF.DEFAULT_KB = {
+  venue_name:'Nathan Café Floral',
+  address:'1350 Rue Mazurette, Montréal, QC',
+  phone:'+1 514-815-9117',
+  email:'Info@nathancafefloral.com',
+  instagram:'https://www.instagram.com/nathancafefloral/',
+  google_place_id:'ChIJ5bwQNg4ZyUwRojs32ikTK34',
+  review_url:'https://nathan-cafe-floral-review.vercel.app',
+  site_url:'https://nathan-cafe-floral.vercel.app',
+  capacity_seated:50,
+  room_fee:1950,
+  deposit_pct:30,
+  damage_deposit:250,
+  balance_due_hours:48,
+  balloons_from:300,
+  tables:'Rectangular tables included',
+  alcohol:'Bring your own alcohol, or a turnkey bar can be arranged',
+  catering:'Bring your own caterer',
+  brunch_seatings:'Saturdays — 10:00 and 12:15, 40 places per seating',
+  notes:'The café is closed to walk-ins on Saturdays. Brunch runs by reservation only and private events are scheduled separately.'
+};
+
+/* ---------- tax settings (Québec defaults — confirm with her accountant) ---------- */
+NCF.DEFAULT_SETTINGS = {
+  currency:'CAD',
+  gst:5,            // TPS
+  qst:9.975,        // TVQ
+  taxes_on:true,
+  review_delay_days:1,
+  review_time:'10:00',
+  owner_email:'',
+  locale:'en-CA'
+};
+
+/* ---------- local storage driver ---------- */
+NCF.store = (function(){
+  const KEY='ncf_crm_v1';
+  let db=null;
+  const blank=()=>({
+    version:1,
+    contacts:[], leads:[], events:[], notes:[], activity:[],
+    review_requests:[], inbox:[],
+    knowledge:{...NCF.DEFAULT_KB},
+    settings:{...NCF.DEFAULT_SETTINGS},
+    seeded:false
+  });
+  function load(){
+    if(db) return db;
+    try{
+      const raw=localStorage.getItem(KEY);
+      db = raw ? JSON.parse(raw) : blank();
+    }catch(e){ db=blank(); }
+    // forward-compatible defaults
+    db.knowledge={...NCF.DEFAULT_KB,...(db.knowledge||{})};
+    db.settings={...NCF.DEFAULT_SETTINGS,...(db.settings||{})};
+    ['contacts','leads','events','notes','activity','review_requests','inbox']
+      .forEach(k=>{ if(!Array.isArray(db[k])) db[k]=[]; });
+    return db;
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(load())); return true; }
+    catch(e){ console.warn('save failed',e); return false; }
+  }
+  return {
+    all:()=>load(),
+    table:n=>load()[n],
+    saveNow:save,
+    reset(){ db=blank(); save(); },
+    replace(obj){ db=obj; save(); },
+    id(p){ return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); },
+    log(type,msg,ref){
+      load().activity.unshift({id:this.id('act'),type,msg,ref:ref||null,at:new Date().toISOString()});
+      load().activity=load().activity.slice(0,400);
+      save();
+    }
+  };
+})();
+
+/* ---------- helpers ---------- */
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => {
+  const v = Number(n)||0;
+  return v.toLocaleString('en-CA',{style:'currency',currency:'CAD',
+    minimumFractionDigits:v%1?2:0, maximumFractionDigits:2});
+};
+const fdate = d => { if(!d) return '—';
+  const x=new Date(d+(d.length===10?'T12:00:00':''));
+  return isNaN(x)?'—':x.toLocaleDateString('en-CA',{day:'numeric',month:'short',year:'numeric'}); };
+const fdt = d => { const x=new Date(d); return isNaN(x)?'—':
+  x.toLocaleString('en-CA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+const ago = d => {
+  const s=(Date.now()-new Date(d))/1000;
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  if(s<604800) return Math.floor(s/86400)+'d ago';
+  return fdate(new Date(d).toISOString().slice(0,10));
+};
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2300);
+}
+</script>
+<script>
+/* ============================================================
+   PRICING ENGINE
+   Defaults come from the venue's own terms (room 1 950 $,
+   30 % deposit, 250 $ refundable, balance 48 h before).
+   Every figure stays editable per quote.
+   ============================================================ */
+NCF.blankQuote = function(){
+  const kb = NCF.store.all().knowledge;
+  return {
+    lines:[{id:NCF.store.id('ln'), label:'Private room rental', qty:1, unit:Number(kb.room_fee)||0}],
+    discount:0,
+    taxes_on: NCF.store.all().settings.taxes_on !== false,
+    deposit_pct: Number(kb.deposit_pct)||30,
+    damage_deposit: Number(kb.damage_deposit)||0
+  };
+};
+
+NCF.priceQuote = function(q, eventDate){
+  const s = NCF.store.all().settings;
+  q = q || NCF.blankQuote();
+  const lines=(q.lines||[]).map(l=>({...l, amount:(Number(l.qty)||0)*(Number(l.unit)||0)}));
+  const gross = lines.reduce((a,l)=>a+l.amount,0);
+  const discount = Math.min(Number(q.discount)||0, gross);
+  const subtotal = gross - discount;
+  const taxesOn = q.taxes_on !== false;
+  const gst = taxesOn ? subtotal*(Number(s.gst)||0)/100 : 0;
+  const qst = taxesOn ? subtotal*(Number(s.qst)||0)/100 : 0;
+  const total = subtotal + gst + qst;
+  const depPct = Math.max(0,Math.min(100, Number(q.deposit_pct)||0));
+  const deposit = total*depPct/100;
+  const damage = Number(q.damage_deposit)||0;
+  const balance = total - deposit;
+  let dueDate=null;
+  if(eventDate){
+    const hrs = Number(NCF.store.all().knowledge.balance_due_hours)||48;
+    const d = new Date(eventDate+'T12:00:00');
+    if(!isNaN(d)){ d.setHours(d.getHours()-hrs); dueDate=d; }
+  }
+  const r=n=>Math.round(n*100)/100;
+  return {lines, gross:r(gross), discount:r(discount), subtotal:r(subtotal),
+          gst:r(gst), qst:r(qst), total:r(total), depositPct:depPct,
+          deposit:r(deposit), balance:r(balance), damage:r(damage),
+          dueToday:r(deposit+damage), dueDate, taxesOn};
+};
+
+/* ============================================================
+   RECORDS
+   ============================================================ */
+NCF.findOrCreateContact = function(d){
+  const t=NCF.store.table('contacts');
+  const email=(d.email||'').trim().toLowerCase();
+  const phone=(d.phone||'').replace(/\D/g,'');
+  let c = email ? t.find(x=>(x.email||'').toLowerCase()===email) : null;
+  if(!c && phone.length>=10) c = t.find(x=>(x.phone||'').replace(/\D/g,'').slice(-10)===phone.slice(-10));
+  if(c){
+    if(d.name && !c.name) c.name=d.name;
+    if(d.phone && !c.phone) c.phone=d.phone;
+    if(d.email && !c.email) c.email=d.email;
+    c.updated_at=new Date().toISOString();
+    return c;
+  }
+  c={ id:NCF.store.id('con'), name:d.name||'Unnamed contact', email:d.email||'',
+      phone:d.phone||'', language:d.language||'en', consent_email:false,
+      consent_whatsapp:false, created_at:new Date().toISOString(),
+      updated_at:new Date().toISOString(), demo:!!d.demo };
+  t.push(c); NCF.store.saveNow();
+  return c;
+};
+
+NCF.createLead = function(d){
+  const contact = NCF.findOrCreateContact(d);
+  const lead = {
+    id:NCF.store.id('lead'),
+    contact_id:contact.id,
+    stage:d.stage||'new',
+    event_type:d.event_type||'Wedding',
+    event_date:d.event_date||'',
+    guests:Number(d.guests)||0,
+    source:d.source||'manual',
+    message:d.message||'',
+    preferences:d.preferences||'',
+    follow_up:d.follow_up||'',
+    assigned:d.assigned||'',
+    quote:d.quote||NCF.blankQuote(),
+    created_at:new Date().toISOString(),
+    updated_at:new Date().toISOString(),
+    stage_history:[{stage:d.stage||'new', at:new Date().toISOString()}],
+    demo:!!d.demo
+  };
+  NCF.store.table('leads').unshift(lead);
+  NCF.store.saveNow();
+  if(!d.demo) NCF.store.log('lead','New enquiry from '+contact.name, lead.id);
+  return lead;
+};
+
+NCF.moveLead = function(id, stage){
+  const l=NCF.store.table('leads').find(x=>x.id===id);
+  if(!l || l.stage===stage) return null;
+  const from=l.stage;
+  l.stage=stage; l.updated_at=new Date().toISOString();
+  (l.stage_history=l.stage_history||[]).push({stage, at:l.updated_at});
+  if(stage==='booked' && !NCF.store.table('events').some(e=>e.lead_id===l.id)){
+    NCF.store.table('events').push({
+      id:NCF.store.id('evt'), lead_id:l.id, contact_id:l.contact_id,
+      title:(NCF.contact(l.contact_id).name||'Event')+' — '+l.event_type,
+      date:l.event_date||'', start_time:'', end_time:'',
+      status:'confirmed', page_published:false,
+      created_at:new Date().toISOString(), demo:!!l.demo
+    });
+  }
+  if(stage==='completed'){
+    const ev=NCF.store.table('events').find(e=>e.lead_id===l.id);
+    if(ev){ ev.status='completed'; NCF.scheduleReview(ev); }
+  }
+  NCF.store.saveNow();
+  NCF.store.log('stage', NCF.contact(l.contact_id).name+': '+NCF.stage(from).label+' → '+NCF.stage(stage).label, l.id);
+  return l;
+};
+
+NCF.contact = id => NCF.store.table('contacts').find(c=>c.id===id) || {name:'Unknown',email:'',phone:''};
+NCF.leadValue = l => NCF.priceQuote(l.quote, l.event_date).total;
+NCF.leadsIn = s => NCF.store.table('leads').filter(l=>l.stage===s);
+
+NCF.deleteLead = function(id){
+  const db=NCF.store.all();
+  db.leads=db.leads.filter(l=>l.id!==id);
+  db.events=db.events.filter(e=>e.lead_id!==id);
+  db.notes=db.notes.filter(n=>n.lead_id!==id);
+  db.review_requests=db.review_requests.filter(r=>r.lead_id!==id);
+  NCF.store.saveNow();
+};
+
+NCF.addNote = function(leadId, body){
+  if(!body.trim()) return;
+  NCF.store.table('notes').unshift({id:NCF.store.id('note'), lead_id:leadId,
+    body:body.trim(), at:new Date().toISOString()});
+  NCF.store.saveNow();
+};
+NCF.notesFor = id => NCF.store.table('notes').filter(n=>n.lead_id===id);
+
+/* review follow-up: scheduled only, never marked as delivered */
+NCF.scheduleReview = function(ev){
+  const db=NCF.store.all();
+  if(db.review_requests.some(r=>r.event_id===ev.id)) return;
+  const c=NCF.contact(ev.contact_id);
+  const s=db.settings;
+  const when=new Date(ev.date? ev.date+'T12:00:00' : Date.now());
+  when.setDate(when.getDate()+(Number(s.review_delay_days)||1));
+  const [hh,mm]=(s.review_time||'10:00').split(':');
+  when.setHours(Number(hh)||10, Number(mm)||0, 0, 0);
+  const consent = c.consent_email ? 'email' : (c.consent_whatsapp ? 'whatsapp' : null);
+  db.review_requests.push({
+    id:NCF.store.id('rev'), event_id:ev.id, lead_id:ev.lead_id, contact_id:ev.contact_id,
+    channel:consent, scheduled_for:when.toISOString(),
+    status: consent ? 'scheduled' : 'blocked_no_consent',
+    reason: consent ? '' : 'No messaging permission recorded for this customer',
+    sent_at:null, provider_id:null, demo:!!ev.demo
+  });
+  NCF.store.saveNow();
+};
+</script>
+<script>
+/* ============================================================
+   ROUTER + CHROME
+   ============================================================ */
+NCF.view='dash';
+NCF.VIEWS={
+  dash:       {t:'Dashboard',            s:'An overview of the venue\'s enquiries'},
+  inbox:      {t:'Inbox',                s:'Enquiries arriving from the website'},
+  leads:      {t:'Leads',                s:'Drag a card between columns to move it through the pipeline'},
+  bookings:   {t:'Bookings & Events',    s:'Confirmed events and their status'},
+  customers:  {t:'Customers',            s:'Everyone who has enquired, and their history'},
+  quotes:     {t:'Quotes & Pricing',     s:'What each enquiry is worth, and the venue\'s rate card'},
+  reviews:    {t:'Review Follow-ups',    s:'Thank-you and review invitations after an event'},
+  kb:         {t:'Knowledge Base',       s:'The verified facts every quote and reply is built from'},
+  integrations:{t:'Integrations',        s:'What is connected, and what is still waiting on access'},
+  settings:   {t:'Settings & Data',      s:'Rates, taxes, and your records'}
+};
+NCF.go=function(v){
+  NCF.view=v;
+  $$('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.view===v));
+  $('#vTitle').textContent=NCF.VIEWS[v].t;
+  $('#vSub').textContent=NCF.VIEWS[v].s;
+  $('#side').classList.remove('on');
+  NCF.render();
+  window.scrollTo(0,0);
+};
+NCF.render=function(){
+  const db=NCF.store.all();
+  $('#pillLeads').textContent=db.leads.filter(l=>!['completed','lost'].includes(l.stage)).length;
+  const inboxN=(db.inbox||[]).filter(i=>!i.imported).length;
+  const pi=$('#pillInbox');
+  pi.textContent=inboxN; pi.style.display=inboxN?'grid':'none';
+  $('#topActions').innerHTML=NCF.topActions();
+  $('#view').innerHTML=NCF['v_'+NCF.view](db);
+  if(NCF['after_'+NCF.view]) NCF['after_'+NCF.view]();
+};
+NCF.topActions=function(){
+  if(['leads','dash','customers','quotes'].includes(NCF.view))
+    return '<button class="btn btn-p" onclick="NCF.newLead()">+ New enquiry</button>';
+  if(NCF.view==='settings')
+    return '<button class="btn" onclick="NCF.exportJSON()">Export records</button>';
+  return '';
+};
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+NCF.v_dash=function(db){
+  const open=db.leads.filter(l=>!['completed','lost'].includes(l.stage));
+  const booked=db.leads.filter(l=>l.stage==='booked');
+  const pipelineValue=open.reduce((a,l)=>a+NCF.leadValue(l),0);
+  const bookedValue=booked.reduce((a,l)=>a+NCF.leadValue(l),0);
+  const now=new Date(); const soon=new Date(Date.now()+30*864e5);
+  const upcoming=db.events.filter(e=>e.date && new Date(e.date+'T12:00:00')>=now)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+  const overdue=open.filter(l=>l.follow_up && new Date(l.follow_up+'T23:59:59')<now);
+  const newCount=db.leads.filter(l=>l.stage==='new').length;
+
+  if(!db.leads.length) return NCF.emptyFirstRun();
+
+  return `
+  <div class="kpis">
+    ${NCF.kpi('New enquiries', newCount, newCount?'Waiting for a first reply':'Nothing new')}
+    ${NCF.kpi('Open pipeline', open.length, money(pipelineValue)+' in play')}
+    ${NCF.kpi('Booked', booked.length, money(bookedValue)+' confirmed')}
+    ${NCF.kpi('Upcoming events', upcoming.filter(e=>new Date(e.date+'T12:00:00')<=soon).length,'In the next 30 days')}
+    ${NCF.kpi('Follow-ups due', overdue.length, overdue.length?'Past their date':'All on schedule')}
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><h3>Pipeline</h3>
+        <div class="spacer" style="flex:1"></div>
+        <button class="btn btn-sm" onclick="NCF.go('leads')">Open board →</button></div>
+      <div class="card-b">${NCF.funnel(db)}</div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Recent activity</h3></div>
+      <div class="card-b" style="padding:8px 0;max-height:420px;overflow:auto">
+        ${db.activity.length? db.activity.slice(0,22).map(a=>`
+          <div style="padding:9px 18px;border-bottom:1px solid var(--line);font-size:12.8px;
+                      display:flex;gap:10px;align-items:flex-start">
+            <span class="dot" style="margin-top:6px;color:${a.type==='stage'?'var(--sage)':'var(--taupe)'}"></span>
+            <span style="flex:1">${esc(a.msg)}</span>
+            <span style="color:var(--muted);font-size:11px;white-space:nowrap">${ago(a.at)}</span>
+          </div>`).join('')
+          : '<div style="padding:26px;text-align:center;color:var(--muted);font-size:13px">Nothing yet.</div>'}
+      </div>
+    </div>
+  </div>
+  ${overdue.length? `<div class="card" style="margin-top:18px">
+    <div class="card-h"><h3>Follow-ups past their date</h3>
+      <span class="tag t-warn" style="margin-left:auto">${overdue.length}</span></div>
+    <div class="tbl-wrap">${NCF.leadTable(overdue)}</div></div>`:''}
+  ${upcoming.length? `<div class="card" style="margin-top:18px">
+    <div class="card-h"><h3>Next events</h3></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>Event</th><th>Date</th><th>Guests</th><th>Status</th></tr></thead><tbody>
+      ${upcoming.slice(0,8).map(e=>{const l=db.leads.find(x=>x.id===e.lead_id)||{};
+        return `<tr onclick="NCF.openLead('${e.lead_id}')">
+          <td class="nm">${esc(e.title)}</td><td>${fdate(e.date)}</td>
+          <td class="num">${l.guests||'—'}</td>
+          <td><span class="tag ${e.status==='completed'?'t-mute':'t-ok'}">${esc(e.status)}</span></td>
+        </tr>`}).join('')}
+    </tbody></table></div></div>`:''}`;
+};
+NCF.kpi=(k,v,m)=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="m">${m}</div></div>`;
+
+NCF.funnel=function(db){
+  const max=Math.max(1,...NCF.STAGES.map(s=>NCF.leadsIn(s.id).length));
+  return NCF.STAGES.map(s=>{
+    const ls=NCF.leadsIn(s.id), val=ls.reduce((a,l)=>a+NCF.leadValue(l),0);
+    return `<div style="display:flex;align-items:center;gap:11px;margin-bottom:9px;cursor:pointer"
+                 onclick="NCF.go('leads')">
+      <span style="width:104px;font-size:12px;color:var(--muted);flex:0 0 104px">${s.label}</span>
+      <span style="flex:1;height:22px;background:var(--lilac-mist);border-radius:5px;overflow:hidden">
+        <span style="display:block;height:100%;width:${ls.length/max*100}%;background:${s.color};
+                     border-radius:5px;transition:width .6s var(--ease);min-width:${ls.length?'4px':'0'}"></span>
+      </span>
+      <b style="width:26px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums">${ls.length}</b>
+      <span style="width:84px;text-align:right;font-size:11.5px;color:var(--muted);
+                   font-variant-numeric:tabular-nums">${val?money(val):''}</span>
+    </div>`;
+  }).join('');
+};
+
+NCF.emptyFirstRun=()=>`
+  <div class="card"><div class="card-b">
+    <div class="empty">
+      <div class="big">No records yet</div>
+      <p>This workspace is empty on purpose — there is no invented customer data in it.
+         Add a real enquiry, or load a small set of clearly-marked sample records to
+         try the board out before the venue's own enquiries start arriving.</p>
+      <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="NCF.newLead()">+ Add the first enquiry</button>
+        <button class="btn" onclick="NCF.seed()">Load sample records</button>
+      </div>
+    </div>
+  </div></div>`;
+</script>
+<script>
+/* ============================================================
+   LEADS — Kanban board + table
+   ============================================================ */
+NCF.leadMode = localStorage.getItem('ncf_leadmode') || 'board';
+NCF.leadFilter = '';
+
+NCF.v_leads=function(db){
+  if(!db.leads.length) return NCF.emptyFirstRun();
+  const bar=`
+    <div style="display:flex;gap:9px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;background:var(--cream);border:1px solid var(--line);
+                  border-radius:var(--r-sm);padding:2px">
+        <button class="btn btn-sm" style="border:0;background:${NCF.leadMode==='board'?'var(--white)':'transparent'};
+          box-shadow:${NCF.leadMode==='board'?'var(--shadow)':'none'}"
+          onclick="NCF.setMode('board')">Board</button>
+        <button class="btn btn-sm" style="border:0;background:${NCF.leadMode==='table'?'var(--white)':'transparent'};
+          box-shadow:${NCF.leadMode==='table'?'var(--shadow)':'none'}"
+          onclick="NCF.setMode('table')">Table</button>
+      </div>
+      <input class="inp" id="leadSearch" placeholder="Search name, email, event type…"
+             value="${esc(NCF.leadFilter)}" style="max-width:300px">
+      <span style="color:var(--muted);font-size:12px" id="leadCount"></span>
+    </div>`;
+  return bar + (NCF.leadMode==='board' ? NCF.board(db) :
+    `<div class="card"><div class="tbl-wrap">${NCF.leadTable(NCF.filtered(db))}</div></div>`);
+};
+NCF.setMode=function(m){ NCF.leadMode=m; localStorage.setItem('ncf_leadmode',m); NCF.render(); };
+NCF.filtered=function(db){
+  const q=NCF.leadFilter.trim().toLowerCase();
+  let ls=db.leads;
+  if(q) ls=ls.filter(l=>{
+    const c=NCF.contact(l.contact_id);
+    return (c.name+' '+c.email+' '+c.phone+' '+l.event_type+' '+l.message).toLowerCase().includes(q);
+  });
+  return ls;
+};
+
+NCF.board=function(db){
+  const ls=NCF.filtered(db);
+  return `<div class="kan-scroll"><div class="kan">${NCF.STAGES.map(s=>{
+    const items=ls.filter(l=>l.stage===s.id);
+    const val=items.reduce((a,l)=>a+NCF.leadValue(l),0);
+    return `<section class="col" data-stage="${s.id}">
+      <div class="col-h">
+        <span class="sw" style="background:${s.color}"></span>
+        <b>${s.label}</b><span class="ct">${items.length}</span>
+      </div>
+      <div class="col-b" data-drop="${s.id}">
+        ${items.map(l=>NCF.leadCard(l)).join('') ||
+          `<div style="padding:16px 8px;text-align:center;color:var(--muted);
+                       font-size:11.5px;line-height:1.5">Drop a card here</div>`}
+      </div>
+      ${val?`<div class="col-val">Worth <b>${money(val)}</b></div>`:''}
+    </section>`;}).join('')}</div></div>`;
+};
+
+NCF.leadCard=function(l){
+  const c=NCF.contact(l.contact_id);
+  const src=NCF.SOURCES[l.source]||NCF.SOURCES.manual;
+  const v=NCF.leadValue(l);
+  const late=l.follow_up && new Date(l.follow_up+'T23:59:59')<new Date();
+  return `<article class="lead" data-id="${l.id}" tabindex="0">
+    <div class="ln">
+      <span class="grip" title="Drag to move" style="cursor:grab;touch-action:none;
+        color:var(--lilac);font-size:13px;letter-spacing:-2px;padding-right:2px">⠿</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</span>
+      ${l.demo?'<span class="tag t-mute" style="font-size:9px;padding:1px 5px">SAMPLE</span>':''}
+    </div>
+    <div class="lt">${esc(l.event_type)}${l.event_date?' · '+fdate(l.event_date):''}${l.guests?' · '+l.guests+' guests':''}</div>
+    <div class="lmeta">
+      <span class="src" style="background:${src.color}" title="${src.label}">${src.short}</span>
+      ${late?'<span class="tag t-warn" style="font-size:10px;padding:1px 6px">Follow up</span>':''}
+      ${v?`<span class="lv">${money(v)}</span>`:''}
+    </div>
+  </article>`;
+};
+
+NCF.leadTable=function(ls){
+  if(!ls.length) return '<div class="empty"><p>Nothing matches that search.</p></div>';
+  return `<table class="tbl"><thead><tr>
+    <th>Customer</th><th>Event</th><th>Date</th><th>Guests</th>
+    <th>Source</th><th>Stage</th><th style="text-align:right">Value</th><th>Updated</th>
+  </tr></thead><tbody>${ls.map(l=>{
+    const c=NCF.contact(l.contact_id), s=NCF.stage(l.stage), src=NCF.SOURCES[l.source]||NCF.SOURCES.manual;
+    return `<tr onclick="NCF.openLead('${l.id}')">
+      <td><div class="nm">${esc(c.name)}</div><div class="sm">${esc(c.email||c.phone||'—')}</div></td>
+      <td>${esc(l.event_type)}</td>
+      <td>${fdate(l.event_date)}</td>
+      <td class="num">${l.guests||'—'}</td>
+      <td><span class="sm">${src.label}</span></td>
+      <td><span class="tag" style="background:${s.color}1a;color:${s.color}">${s.label}</span></td>
+      <td class="num" style="text-align:right;font-weight:600">${money(NCF.leadValue(l))}</td>
+      <td class="sm">${ago(l.updated_at)}</td>
+    </tr>`;}).join('')}</tbody></table>`;
+};
+
+NCF.after_leads=function(){
+  const s=$('#leadSearch');
+  if(s){
+    s.oninput=()=>{ NCF.leadFilter=s.value;
+      const db=NCF.store.all();
+      if(NCF.leadMode==='board'){ $('.kan-scroll').outerHTML=NCF.board(db); NCF.wireDnD(); }
+      else $('.tbl-wrap').innerHTML=NCF.leadTable(NCF.filtered(db));
+      $('#leadCount').textContent=NCF.filtered(db).length+' of '+db.leads.length;
+    };
+    $('#leadCount').textContent=NCF.filtered(NCF.store.all()).length+' of '+NCF.store.all().leads.length;
+  }
+  NCF.wireDnD();
+};
+
+/* ============================================================
+   DRAG AND DROP
+   Pointer Events, so one code path covers mouse, pen and touch.
+   On touch the grip handle starts the drag, which keeps normal
+   finger-scrolling of the column working.
+   ============================================================ */
+NCF.wireDnD=function(){
+  $$('.lead').forEach(card=>{
+    card.onpointerdown=e=>{
+      if(e.button && e.button!==0) return;
+      const onGrip = e.target.closest('.grip');
+      const touch = e.pointerType!=='mouse';
+      if(touch && !onGrip) return;          // let the finger scroll / tap
+      NCF.startDrag(e, card, touch);
+    };
+    card.onclick=e=>{ if(!NCF._moved && !e.target.closest('.grip')) NCF.openLead(card.dataset.id); };
+    card.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();NCF.openLead(card.dataset.id);} };
+  });
+};
+
+NCF.startDrag=function(e, card, touch){
+  const id=card.dataset.id;
+  const sx=e.clientX, sy=e.clientY;
+  const rect=card.getBoundingClientRect();
+  const ox=sx-rect.left, oy=sy-rect.top;
+  let ghost=null, active=false, lastCol=null;
+  NCF._moved=false;
+
+  const move=ev=>{
+    const dx=ev.clientX-sx, dy=ev.clientY-sy;
+    if(!active){
+      if(Math.hypot(dx,dy) < (touch?4:5)) return;
+      active=true; NCF._moved=true;
+      ghost=card.cloneNode(true);
+      ghost.classList.add('ghost');
+      ghost.style.width=rect.width+'px';
+      document.body.appendChild(ghost);
+      card.classList.add('dragging');
+      document.body.style.userSelect='none';
+    }
+    ev.preventDefault();
+    ghost.style.left=(ev.clientX-ox)+'px';
+    ghost.style.top =(ev.clientY-oy)+'px';
+    ghost.style.display='none';
+    const under=document.elementFromPoint(ev.clientX, ev.clientY);
+    ghost.style.display='';
+    const col=under && under.closest('.col');
+    if(col!==lastCol){
+      if(lastCol) lastCol.classList.remove('over');
+      if(col) col.classList.add('over');
+      lastCol=col;
+    }
+    // auto-scroll the board sideways near the edges
+    const sc=$('.kan-scroll');
+    if(sc){
+      const r=sc.getBoundingClientRect();
+      if(ev.clientX > r.right-56) sc.scrollLeft += 14;
+      else if(ev.clientX < r.left+56) sc.scrollLeft -= 14;
+    }
+  };
+  const up=ev=>{
+    window.removeEventListener('pointermove',move);
+    window.removeEventListener('pointerup',up);
+    window.removeEventListener('pointercancel',up);
+    document.body.style.userSelect='';
+    if(ghost) ghost.remove();
+    card.classList.remove('dragging');
+    if(lastCol) lastCol.classList.remove('over');
+    if(!active) return;
+    const stage=lastCol && lastCol.dataset.stage;
+    if(stage){
+      const l=NCF.store.table('leads').find(x=>x.id===id);
+      if(l && l.stage!==stage){
+        NCF.moveLead(id, stage);
+        toast(NCF.contact(l.contact_id).name+' → '+NCF.stage(stage).label);
+      }
+    }
+    NCF.render();
+    setTimeout(()=>{NCF._moved=false;},60);
+  };
+  window.addEventListener('pointermove',move,{passive:false});
+  window.addEventListener('pointerup',up);
+  window.addEventListener('pointercancel',up);
+};
+</script>
+<script>
+/* ============================================================
+   LEAD DRAWER
+   ============================================================ */
+NCF.openId=null;
+NCF.openLead=function(id){
+  const l=NCF.store.table('leads').find(x=>x.id===id); if(!l) return;
+  NCF.openId=id;
+  const c=NCF.contact(l.contact_id);
+  $('#dwTitle').textContent=c.name;
+  $('#dwSub').textContent=l.event_type+(l.event_date?' · '+fdate(l.event_date):'')+' · '+
+    (NCF.SOURCES[l.source]||NCF.SOURCES.manual).label;
+  $('#dwBody').innerHTML=NCF.leadForm(l,c);
+  $('#dwFoot').innerHTML=`
+    <button class="btn btn-p" onclick="NCF.saveLead()">Save changes</button>
+    <button class="btn" onclick="NCF.printQuote()">Print quote</button>
+    <button class="btn btn-d" style="margin-left:auto" onclick="NCF.askDelete()">Delete</button>`;
+  $('#drawer').classList.add('on'); $('#scrim').classList.add('on');
+  $('#drawer').setAttribute('aria-hidden','false');
+  NCF.wireQuote();
+};
+NCF.closeDrawer=function(){
+  $('#drawer').classList.remove('on'); $('#scrim').classList.remove('on');
+  $('#drawer').setAttribute('aria-hidden','true'); NCF.openId=null;
+};
+
+NCF.leadForm=function(l,c){
+  const q=l.quote||NCF.blankQuote();
+  return `
+  <div class="sect">Pipeline stage</div>
+  <div class="stage-pick">${NCF.STAGES.map(s=>`
+    <button data-st="${s.id}" class="${l.stage===s.id?'on':''}"
+      style="${l.stage===s.id?'background:'+s.color:''}"
+      onclick="NCF.setStage('${s.id}')">${s.label}</button>`).join('')}</div>
+
+  <div class="sect">Customer</div>
+  <label class="field"><label>Full name</label>
+    <input class="inp" id="f_name" value="${esc(c.name)}"></label>
+  <div class="row2">
+    <label class="field"><label>Email</label>
+      <input class="inp" id="f_email" type="email" value="${esc(c.email)}"></label>
+    <label class="field"><label>Phone</label>
+      <input class="inp" id="f_phone" value="${esc(c.phone)}"></label>
+  </div>
+  <div class="row2">
+    <label class="field"><label>Language</label>
+      <select class="inp" id="f_lang">
+        <option value="en"${c.language==='en'?' selected':''}>English</option>
+        <option value="fr"${c.language==='fr'?' selected':''}>Français</option>
+      </select></label>
+    <label class="field"><label>Source</label>
+      <select class="inp" id="f_source">${Object.entries(NCF.SOURCES).map(([k,v])=>
+        `<option value="${k}"${l.source===k?' selected':''}>${v.label}</option>`).join('')}</select></label>
+  </div>
+  <div style="display:flex;gap:16px;margin:-4px 0 4px;flex-wrap:wrap">
+    <label style="display:flex;gap:7px;align-items:center;font-size:12.5px">
+      <input type="checkbox" id="f_cemail"${c.consent_email?' checked':''}> May email them</label>
+    <label style="display:flex;gap:7px;align-items:center;font-size:12.5px">
+      <input type="checkbox" id="f_cwa"${c.consent_whatsapp?' checked':''}> May WhatsApp them</label>
+  </div>
+  <div class="hint">Review invitations are only scheduled for a channel the customer has agreed to.
+    This is what Law 25 and CASL ask you to be able to show.</div>
+
+  <div class="sect">Event</div>
+  <div class="row2">
+    <label class="field"><label>Type</label>
+      <select class="inp" id="f_type">${NCF.EVENT_TYPES.map(t=>
+        `<option${l.event_type===t?' selected':''}>${t}</option>`).join('')}</select></label>
+    <label class="field"><label>Preferred date</label>
+      <input class="inp" id="f_date" type="date" value="${esc(l.event_date)}"></label>
+  </div>
+  <div class="row2">
+    <label class="field"><label>Guests</label>
+      <input class="inp" id="f_guests" type="number" min="0" value="${l.guests||''}"></label>
+    <label class="field"><label>Follow up on</label>
+      <input class="inp" id="f_follow" type="date" value="${esc(l.follow_up)}"></label>
+  </div>
+  ${l.guests>Number(NCF.store.all().knowledge.capacity_seated||50)?
+    `<div class="banner b-warn" style="margin:-4px 0 14px"><span>⚠</span><span>
+      <b>Above the room's seated capacity.</b> The knowledge base records
+      ${esc(NCF.store.all().knowledge.capacity_seated)} seated — confirm before promising anything.</span></div>`:''}
+  <label class="field"><label>What they asked for</label>
+    <textarea class="inp" id="f_msg">${esc(l.message)}</textarea></label>
+  <label class="field"><label>Preferences &amp; special requests</label>
+    <textarea class="inp" id="f_pref" style="min-height:62px">${esc(l.preferences)}</textarea></label>
+
+  <div class="sect">Quote</div>
+  <div id="quoteBox">${NCF.quoteEditor(l,q)}</div>
+
+  <div class="sect">Notes</div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <input class="inp" id="noteIn" placeholder="Add a note…">
+    <button class="btn" onclick="NCF.pushNote()">Add</button>
+  </div>
+  <div id="noteList">${NCF.noteList(l.id)}</div>
+
+  <div class="sect">History</div>
+  <div style="font-size:12.3px;color:var(--muted);line-height:1.8">
+    ${(l.stage_history||[]).map(h=>`${NCF.stage(h.stage).label} — ${fdt(h.at)}`).join('<br>')}
+    <br>Created ${fdt(l.created_at)}
+  </div>`;
+};
+
+NCF.quoteEditor=function(l,q){
+  const p=NCF.priceQuote(q,l.event_date);
+  const s=NCF.store.all().settings;
+  return `
+  <div class="q-lines" id="qLines">
+    ${p.lines.map(ln=>`<div class="q-line" data-ln="${ln.id}">
+      <input value="${esc(ln.label)}" data-k="label" placeholder="Description">
+      <input type="number" step="0.01" value="${ln.unit}" data-k="unit" placeholder="Rate">
+      <span class="amt">${money(ln.amount)}</span>
+      <button class="rm" onclick="NCF.rmLine('${ln.id}')" title="Remove">✕</button>
+    </div>`).join('')}
+  </div>
+  <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
+    <button class="btn btn-sm" onclick="NCF.addLine()">+ Line</button>
+    <button class="btn btn-sm" onclick="NCF.addLine('Balloon styling',${NCF.store.all().knowledge.balloons_from||300})">+ Balloons</button>
+    <button class="btn btn-sm" onclick="NCF.addLine('Turnkey bar service',0)">+ Bar</button>
+    <button class="btn btn-sm" onclick="NCF.addLine('Floral styling',0)">+ Florals</button>
+  </div>
+  <div class="row3" style="margin-top:13px">
+    <label class="field"><label>Discount</label>
+      <input class="inp" id="q_disc" type="number" step="0.01" value="${q.discount||0}"></label>
+    <label class="field"><label>Deposit %</label>
+      <input class="inp" id="q_dep" type="number" min="0" max="100" value="${q.deposit_pct}"></label>
+    <label class="field"><label>Refundable</label>
+      <input class="inp" id="q_dmg" type="number" step="0.01" value="${q.damage_deposit}"></label>
+  </div>
+  <label style="display:flex;gap:7px;align-items:center;font-size:12.5px;margin-bottom:10px">
+    <input type="checkbox" id="q_tax"${p.taxesOn?' checked':''}>
+    Add GST ${s.gst}% and QST ${s.qst}%</label>
+  <div class="q-tot" id="qTot">${NCF.quoteTotals(p)}</div>`;
+};
+
+NCF.quoteTotals=function(p){
+  return `
+    <div class="q-row sub"><span>Items</span><span>${money(p.gross)}</span></div>
+    ${p.discount?`<div class="q-row sub"><span>Discount</span><span>−${money(p.discount)}</span></div>`:''}
+    <div class="q-row"><span>Subtotal</span><span>${money(p.subtotal)}</span></div>
+    ${p.taxesOn?`<div class="q-row sub"><span>GST</span><span>${money(p.gst)}</span></div>
+    <div class="q-row sub"><span>QST</span><span>${money(p.qst)}</span></div>`:''}
+    <div class="q-row grand"><span>Total</span><span>${money(p.total)}</span></div>
+    <div class="q-row hl"><span>Deposit to confirm (${p.depositPct}%)</span><span>${money(p.deposit)}</span></div>
+    ${p.damage?`<div class="q-row hl"><span>Refundable deposit</span><span>${money(p.damage)}</span></div>`:''}
+    <div class="q-row"><span>Due to hold the date</span><span>${money(p.dueToday)}</span></div>
+    <div class="q-row sub"><span>Balance${p.dueDate?' — by '+fdt(p.dueDate):''}</span><span>${money(p.balance)}</span></div>`;
+};
+
+NCF.wireQuote=function(){
+  const box=$('#quoteBox'); if(!box) return;
+  box.oninput=()=>{ NCF.collectQuote(); NCF.refreshTotals(); };
+  const d=$('#f_date'); if(d) d.onchange=()=>NCF.refreshTotals();
+};
+NCF.collectQuote=function(){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  const q=l.quote||NCF.blankQuote();
+  q.lines=$$('#qLines .q-line').map(row=>({
+    id:row.dataset.ln,
+    label:$('[data-k=label]',row).value,
+    qty:1,
+    unit:Number($('[data-k=unit]',row).value)||0
+  }));
+  q.discount=Number($('#q_disc').value)||0;
+  q.deposit_pct=Number($('#q_dep').value)||0;
+  q.damage_deposit=Number($('#q_dmg').value)||0;
+  q.taxes_on=$('#q_tax').checked;
+  l.quote=q;
+};
+NCF.refreshTotals=function(){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  const date=$('#f_date')?$('#f_date').value:l.event_date;
+  const p=NCF.priceQuote(l.quote,date);
+  $('#qTot').innerHTML=NCF.quoteTotals(p);
+  $$('#qLines .q-line').forEach((row,i)=>{
+    const amt=$('.amt',row); if(amt&&p.lines[i]) amt.textContent=money(p.lines[i].amount);
+  });
+};
+NCF.addLine=function(label,unit){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  NCF.collectQuote();
+  l.quote.lines.push({id:NCF.store.id('ln'), label:label||'', qty:1, unit:Number(unit)||0});
+  NCF.store.saveNow();
+  $('#quoteBox').innerHTML=NCF.quoteEditor(l,l.quote); NCF.wireQuote();
+};
+NCF.rmLine=function(id){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  NCF.collectQuote();
+  l.quote.lines=l.quote.lines.filter(x=>x.id!==id);
+  NCF.store.saveNow();
+  $('#quoteBox').innerHTML=NCF.quoteEditor(l,l.quote); NCF.wireQuote();
+};
+</script>
+<script>
+/* ---------- drawer actions ---------- */
+NCF.setStage=function(st){
+  if(!NCF.openId) return;
+  NCF.saveLead(true);
+  NCF.moveLead(NCF.openId, st);
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId);
+  $$('.stage-pick button').forEach(b=>{
+    const on=b.dataset.st===st;
+    b.classList.toggle('on',on);
+    b.style.background = on ? NCF.stage(st).color : '';
+  });
+  toast('Moved to '+NCF.stage(st).label);
+  NCF.render();
+};
+NCF.saveLead=function(quiet){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  const c=NCF.contact(l.contact_id);
+  c.name=$('#f_name').value.trim()||c.name;
+  c.email=$('#f_email').value.trim();
+  c.phone=$('#f_phone').value.trim();
+  c.language=$('#f_lang').value;
+  c.consent_email=$('#f_cemail').checked;
+  c.consent_whatsapp=$('#f_cwa').checked;
+  c.updated_at=new Date().toISOString();
+  l.source=$('#f_source').value;
+  l.event_type=$('#f_type').value;
+  l.event_date=$('#f_date').value;
+  l.guests=Number($('#f_guests').value)||0;
+  l.follow_up=$('#f_follow').value;
+  l.message=$('#f_msg').value;
+  l.preferences=$('#f_pref').value;
+  NCF.collectQuote();
+  l.updated_at=new Date().toISOString();
+  const ev=NCF.store.table('events').find(e=>e.lead_id===l.id);
+  if(ev){ ev.date=l.event_date; ev.title=c.name+' — '+l.event_type; }
+  NCF.store.saveNow();
+  if(!quiet){ toast('Saved'); NCF.render(); NCF.closeDrawer(); }
+};
+NCF.askDelete=function(){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  if(!confirm('Delete this enquiry and everything attached to it? This cannot be undone.')) return;
+  NCF.deleteLead(NCF.openId); NCF.closeDrawer(); NCF.render(); toast('Deleted');
+};
+NCF.pushNote=function(){
+  const i=$('#noteIn'); if(!i||!i.value.trim()) return;
+  NCF.addNote(NCF.openId,i.value); i.value='';
+  $('#noteList').innerHTML=NCF.noteList(NCF.openId);
+};
+NCF.noteList=function(id){
+  const ns=NCF.notesFor(id);
+  if(!ns.length) return '<div style="color:var(--muted);font-size:12.5px">No notes yet.</div>';
+  return ns.map(n=>`<div class="note"><div class="nh">${fdt(n.at)}</div>
+    <div class="nb">${esc(n.body)}</div></div>`).join('');
+};
+NCF.newLead=function(){
+  const l=NCF.createLead({name:'', source:'manual', stage:'new'});
+  NCF.render(); NCF.openLead(l.id);
+  setTimeout(()=>{const n=$('#f_name'); if(n) n.focus();},420);
+};
+NCF.printQuote=function(){
+  const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
+  NCF.saveLead(true);
+  const c=NCF.contact(l.contact_id), kb=NCF.store.all().knowledge, p=NCF.priceQuote(l.quote,l.event_date);
+  const w=window.open('','_blank');
+  if(!w){ toast('Allow pop-ups to print the quote'); return; }
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Quote — ${esc(c.name)}</title>
+  <style>body{font-family:Georgia,serif;color:#241733;max-width:680px;margin:40px auto;padding:0 24px;line-height:1.6}
+  h1{font-size:26px;margin:0 0 2px}.m{color:#7A6B8C;font-size:13px;font-family:system-ui}
+  table{width:100%;border-collapse:collapse;margin:26px 0 10px;font-family:system-ui;font-size:14px}
+  td,th{padding:9px 0;border-bottom:1px solid #E3DCE8;text-align:left}
+  td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+  .tot td{border:0;padding:5px 0}.g td{font-size:19px;font-weight:700;padding-top:12px;border-top:2px solid #493269}
+  .terms{margin-top:30px;font-size:12.5px;font-family:system-ui;color:#5a4a6b;border-top:1px solid #E3DCE8;padding-top:16px}
+  </style></head><body>
+  <h1>${esc(kb.venue_name)}</h1>
+  <div class="m">${esc(kb.address)} · ${esc(kb.phone)} · ${esc(kb.email)}</div>
+  <h2 style="margin-top:30px;font-size:19px">Quote — ${esc(c.name)}</h2>
+  <div class="m">${esc(l.event_type)}${l.event_date?' · '+fdate(l.event_date):''}${l.guests?' · '+l.guests+' guests':''}
+    <br>Prepared ${fdate(new Date().toISOString().slice(0,10))}</div>
+  <table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody>
+  ${p.lines.filter(x=>x.label||x.amount).map(x=>`<tr><td>${esc(x.label||'Item')}</td><td>${money(x.amount)}</td></tr>`).join('')}
+  </tbody><tbody class="tot">
+  ${p.discount?`<tr><td>Discount</td><td>−${money(p.discount)}</td></tr>`:''}
+  <tr><td>Subtotal</td><td>${money(p.subtotal)}</td></tr>
+  ${p.taxesOn?`<tr><td>GST</td><td>${money(p.gst)}</td></tr><tr><td>QST</td><td>${money(p.qst)}</td></tr>`:''}
+  <tr class="g"><td>Total</td><td>${money(p.total)}</td></tr>
+  <tr><td>Deposit to confirm (${p.depositPct}%)</td><td>${money(p.deposit)}</td></tr>
+  ${p.damage?`<tr><td>Refundable deposit</td><td>${money(p.damage)}</td></tr>`:''}
+  <tr><td><b>Due to hold the date</b></td><td><b>${money(p.dueToday)}</b></td></tr>
+  <tr><td>Balance${p.dueDate?', by '+fdate(p.dueDate.toISOString().slice(0,10)):''}</td><td>${money(p.balance)}</td></tr>
+  </tbody></table>
+  <div class="terms"><b>Terms</b><br>
+  ${esc(kb.tables)}.<br>${esc(kb.alcohol)}.<br>${esc(kb.catering)}.<br>
+  A ${p.depositPct}% deposit confirms the date.
+  ${p.damage?'The '+money(p.damage)+' deposit is refunded the day after the event.':''}
+  The balance is due ${esc(kb.balance_due_hours)} hours before the event.<br><br>
+  This is a quote, not a confirmed booking. The date is held once the deposit is received.</div>
+  </body></html>`);
+  w.document.close(); setTimeout(()=>w.print(),350);
+};
+</script>
+<script>
+/* ============================================================
+   REMAINING VIEWS
+   ============================================================ */
+NCF.v_customers=function(db){
+  if(!db.contacts.length) return NCF.emptyFirstRun();
+  return `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
+    <th>Name</th><th>Contact</th><th>Language</th><th>Enquiries</th>
+    <th>Permissions</th><th style="text-align:right">Total value</th><th>Added</th>
+  </tr></thead><tbody>${db.contacts.map(c=>{
+    const ls=db.leads.filter(l=>l.contact_id===c.id);
+    const val=ls.reduce((a,l)=>a+NCF.leadValue(l),0);
+    return `<tr onclick="${ls.length?`NCF.openLead('${ls[0].id}')`:''}">
+      <td><div class="nm">${esc(c.name)}</div>
+        ${c.demo?'<span class="tag t-mute" style="font-size:9px">SAMPLE</span>':''}</td>
+      <td><div class="sm">${esc(c.email||'—')}</div><div class="sm">${esc(c.phone||'')}</div></td>
+      <td class="sm">${c.language==='fr'?'Français':'English'}</td>
+      <td class="num">${ls.length}</td>
+      <td>${c.consent_email?'<span class="tag t-ok" style="font-size:10px">Email</span> ':''}
+          ${c.consent_whatsapp?'<span class="tag t-ok" style="font-size:10px">WhatsApp</span>':''}
+          ${!c.consent_email&&!c.consent_whatsapp?'<span class="tag t-mute" style="font-size:10px">None on file</span>':''}</td>
+      <td class="num" style="text-align:right;font-weight:600">${money(val)}</td>
+      <td class="sm">${fdate(c.created_at.slice(0,10))}</td>
+    </tr>`;}).join('')}</tbody></table></div></div>`;
+};
+
+NCF.v_bookings=function(db){
+  if(!db.events.length) return `<div class="card"><div class="card-b"><div class="empty">
+    <div class="big">No confirmed bookings yet</div>
+    <p>An event record is created automatically the moment you drag an enquiry
+       into <b>Booked</b> on the leads board.</p>
+    <button class="btn btn-p" onclick="NCF.go('leads')">Open the board</button></div></div></div>`;
+  const ev=[...db.events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  return `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
+    <th>Event</th><th>Date</th><th>Guests</th><th>Value</th><th>Status</th><th>Event page</th>
+  </tr></thead><tbody>${ev.map(e=>{
+    const l=db.leads.find(x=>x.id===e.lead_id)||{};
+    return `<tr onclick="NCF.openLead('${e.lead_id}')">
+      <td class="nm">${esc(e.title)}</td>
+      <td>${fdate(e.date)}</td>
+      <td class="num">${l.guests||'—'}</td>
+      <td class="num" style="font-weight:600">${l.id?money(NCF.leadValue(l)):'—'}</td>
+      <td><span class="tag ${e.status==='completed'?'t-mute':'t-ok'}">${esc(e.status)}</span></td>
+      <td><span class="tag t-mute">Not built yet</span></td>
+    </tr>`;}).join('')}</tbody></table></div></div>
+  <div class="banner b-info" style="margin-top:16px"><span>◷</span><span>
+    <b>Personalised event pages are not in this build.</b> They need the shared backend and a
+    place to host each page, so the column above is honest about not having one rather than
+    showing a link that leads nowhere.</span></div>`;
+};
+
+NCF.v_quotes=function(db){
+  const kb=db.knowledge, s=db.settings;
+  const withQuotes=db.leads.filter(l=>NCF.leadValue(l)>0);
+  const total=withQuotes.reduce((a,l)=>a+NCF.leadValue(l),0);
+  const booked=db.leads.filter(l=>l.stage==='booked').reduce((a,l)=>a+NCF.leadValue(l),0);
+  return `
+  <div class="kpis">
+    ${NCF.kpi('Quoted', withQuotes.length, 'enquiries with a price on them')}
+    ${NCF.kpi('Quoted value', money(total), 'across every open stage')}
+    ${NCF.kpi('Booked value', money(booked), 'confirmed with a deposit due')}
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><h3>Rate card</h3>
+        <button class="btn btn-sm" style="margin-left:auto" onclick="NCF.go('kb')">Edit →</button></div>
+      <div class="card-b">
+        <div class="q-tot" style="border:0;padding:0">
+          <div class="q-row"><span>Private room rental</span><span>${money(kb.room_fee)}</span></div>
+          <div class="q-row"><span>Seated capacity</span><span>${esc(kb.capacity_seated)} guests</span></div>
+          <div class="q-row"><span>Deposit to confirm</span><span>${esc(kb.deposit_pct)}%</span></div>
+          <div class="q-row"><span>Refundable deposit</span><span>${money(kb.damage_deposit)}</span></div>
+          <div class="q-row"><span>Balance due</span><span>${esc(kb.balance_due_hours)} h before</span></div>
+          <div class="q-row"><span>Balloon styling from</span><span>${money(kb.balloons_from)}</span></div>
+          <div class="q-row sub"><span>GST / QST</span><span>${s.gst}% / ${s.qst}%</span></div>
+        </div>
+        <div class="banner b-warn" style="margin:16px 0 0"><span>⚠</span><span>
+          Tax rates are the standard Québec rates and are applied per quote.
+          Confirm with her accountant whether the venue charges them before any quote goes out.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Quoted enquiries</h3></div>
+      <div class="tbl-wrap">${withQuotes.length?
+        `<table class="tbl"><thead><tr><th>Customer</th><th>Stage</th>
+          <th style="text-align:right">Total</th><th style="text-align:right">Deposit</th></tr></thead><tbody>
+        ${withQuotes.map(l=>{const p=NCF.priceQuote(l.quote,l.event_date),st=NCF.stage(l.stage);
+          return `<tr onclick="NCF.openLead('${l.id}')">
+            <td class="nm">${esc(NCF.contact(l.contact_id).name)}</td>
+            <td><span class="tag" style="background:${st.color}1a;color:${st.color}">${st.label}</span></td>
+            <td class="num" style="text-align:right;font-weight:600">${money(p.total)}</td>
+            <td class="num" style="text-align:right;color:var(--sage-deep)">${money(p.deposit)}</td>
+          </tr>`;}).join('')}</tbody></table>`
+        : '<div class="empty"><p>No quotes yet. Open an enquiry and add a line to its quote.</p></div>'}
+      </div>
+    </div>
+  </div>`;
+};
+
+NCF.v_reviews=function(db){
+  const rs=db.review_requests;
+  const kb=db.knowledge;
+  return `
+  <div class="banner b-info"><span>◷</span><span>
+    <b>Scheduling works here; sending does not.</b> When an enquiry reaches <b>Completed</b>,
+    a follow-up is scheduled against the customer's recorded permission. Actually delivering it
+    needs an email provider or WhatsApp, which are not connected — so nothing is ever
+    marked as sent or delivered.</span></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><h3>Scheduled follow-ups</h3></div>
+      <div class="tbl-wrap">${rs.length? `<table class="tbl"><thead><tr>
+        <th>Customer</th><th>Channel</th><th>When</th><th>Status</th></tr></thead><tbody>
+        ${rs.map(r=>{const c=NCF.contact(r.contact_id);
+          return `<tr><td class="nm">${esc(c.name)}</td>
+            <td>${r.channel?esc(r.channel):'<span class="sm">—</span>'}</td>
+            <td>${fdt(r.scheduled_for)}</td>
+            <td>${r.status==='scheduled'
+              ?'<span class="tag t-info">Scheduled</span>'
+              :'<span class="tag t-warn" title="'+esc(r.reason)+'">Blocked — no permission</span>'}</td>
+          </tr>`;}).join('')}</tbody></table>`
+        : '<div class="empty"><p>Nothing scheduled. Move a booked event to <b>Completed</b> and a follow-up appears here.</p></div>'}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Timing &amp; message</h3></div>
+      <div class="card-b">
+        <div class="row2">
+          <label class="field"><label>Days after the event</label>
+            <input class="inp" id="s_delay" type="number" min="0" value="${db.settings.review_delay_days}"></label>
+          <label class="field"><label>Send at</label>
+            <input class="inp" id="s_time" type="time" value="${esc(db.settings.review_time)}"></label>
+        </div>
+        <label class="field"><label>Review link</label>
+          <input class="inp" id="s_revurl" value="${esc(kb.review_url)}"></label>
+        <div class="hint">Confirmed live, pointing at the venue's own Google profile
+          (place ID <code>${esc(kb.google_place_id)}</code>).</div>
+        <button class="btn btn-p" style="margin-top:10px" onclick="NCF.saveReviewSettings()">Save</button>
+        <div class="sect">The message</div>
+        <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);
+                    padding:13px;font-size:12.6px;line-height:1.6;white-space:pre-wrap">Hello [name],
+
+Thank you for choosing Nathan Café Floral to be part of your special occasion. We hope you and your guests had a wonderful time.
+
+We would love to hear your honest feedback:
+${esc(kb.review_url)}
+
+Warm regards,
+The Nathan Café Floral Team</div>
+        <div class="hint">The French version is sent to anyone whose language is set to Français.
+          Every eligible customer gets the same invitation — no filtering by how happy they seemed.</div>
+      </div>
+    </div>
+  </div>`;
+};
+</script>
+<script>
+NCF.KB_FIELDS=[
+  ['venue_name','Venue name','text'],['address','Address','text'],
+  ['phone','Phone','text'],['email','Email','text'],
+  ['instagram','Instagram','text'],['site_url','Website','text'],
+  ['review_url','Review page','text'],['google_place_id','Google place ID','text'],
+  ['capacity_seated','Seated capacity','number'],['room_fee','Room rental','number'],
+  ['deposit_pct','Deposit %','number'],['damage_deposit','Refundable deposit','number'],
+  ['balance_due_hours','Balance due (hours before)','number'],
+  ['balloons_from','Balloon styling from','number'],
+  ['tables','Tables','text'],['alcohol','Alcohol','text'],['catering','Catering','text'],
+  ['brunch_seatings','Brunch seatings','text'],['notes','Saturday note','textarea']
+];
+NCF.v_kb=function(db){
+  return `<div class="banner b-info"><span>ℹ</span><span>
+    These are the only figures the CRM will quote. They came from the venue's own
+    documents — change one here and every new quote follows it.</span></div>
+  <div class="card"><div class="card-b">
+    <div class="row2">${NCF.KB_FIELDS.map(([k,label,type])=>
+      type==='textarea'
+      ? `<label class="field" style="grid-column:1/-1"><label>${label}</label>
+           <textarea class="inp" data-kb="${k}" style="min-height:58px">${esc(db.knowledge[k])}</textarea></label>`
+      : `<label class="field"><label>${label}</label>
+           <input class="inp" data-kb="${k}" type="${type}" value="${esc(db.knowledge[k])}"></label>`
+    ).join('')}</div>
+    <button class="btn btn-p" onclick="NCF.saveKB()">Save knowledge base</button>
+  </div></div>`;
+};
+NCF.saveKB=function(){
+  const kb=NCF.store.all().knowledge;
+  $$('[data-kb]').forEach(el=>{
+    kb[el.dataset.kb]= el.type==='number' ? (Number(el.value)||0) : el.value;
+  });
+  NCF.store.saveNow(); toast('Knowledge base saved'); NCF.render();
+};
+NCF.saveReviewSettings=function(){
+  const db=NCF.store.all();
+  db.settings.review_delay_days=Number($('#s_delay').value)||1;
+  db.settings.review_time=$('#s_time').value||'10:00';
+  db.knowledge.review_url=$('#s_revurl').value;
+  NCF.store.saveNow(); toast('Saved');
+};
+
+NCF.INTEGRATIONS=[
+  ['Database (Supabase / Postgres)','Records live in this browser only. Nothing is shared between devices, and clearing site data clears them.','SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY'],
+  ['Staff sign-in','Anyone who opens this file can read everything in it. Real accounts and roles need the database above.','Supabase Auth'],
+  ['Website forms','The brunch and private-event forms on the live site post nowhere. They tell the visitor nothing was sent rather than showing a false confirmation.','An endpoint for window.NCF_ENDPOINT'],
+  ['Email delivery','No provider connected, so review invitations are scheduled but never sent.','EMAIL_PROVIDER_API_KEY, EMAIL_FROM_ADDRESS'],
+  ['WhatsApp Business','Not connected. Needs an approved Meta app, a verified number and a public webhook URL.','META_APP_ID, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_VERIFY_TOKEN'],
+  ['AI concierge','Not connected. A key cannot sit in a file the public can open — it needs a server route.','OPENAI_API_KEY, behind a backend']
+];
+NCF.v_integrations=function(){
+  return `<div class="banner b-warn"><span>⚠</span><span>
+    <b>Nothing here is connected yet.</b> Every item below is shown as it actually is.
+    None of them will ever display a green "connected" badge until the credential exists
+    and a real call has succeeded.</span></div>
+  <div class="card"><div class="card-b" style="padding:0">
+    ${NCF.INTEGRATIONS.map(([n,d,env],i)=>`
+      <div style="padding:15px 18px;${i?'border-top:1px solid var(--line)':''}">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:5px;flex-wrap:wrap">
+          <b style="font-size:13.5px">${n}</b>
+          <span class="tag t-warn"><span class="dot"></span>Not connected</span>
+        </div>
+        <div style="font-size:12.6px;color:var(--muted);line-height:1.55">${d}</div>
+        <div style="font-size:11px;color:var(--sage-deep);margin-top:6px;font-family:ui-monospace,monospace">${esc(env)}</div>
+      </div>`).join('')}
+  </div></div>` + `
+  <div class="card" style="margin-top:18px">
+    <div class="card-h"><h3>Making the connection automatic</h3></div>
+    <div class="card-b">
+      <p style="font-size:13px;line-height:1.6;margin:0 0 14px">
+        Today an enquiry reaches the board through the <b>Inbox</b> — the website e-mails it
+        with an <code>NCF-LEAD…</code> line you paste in. These two files replace that step
+        with a real database. The website already sends this exact shape and the CRM already
+        reads it, so nothing else has to change.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-p" onclick="NCF.copyCode('apiCode',this)">Copy api/lead.js</button>
+        <button class="btn" onclick="NCF.copyCode('sqlCode',this)">Copy the SQL</button>
+      </div>
+      <pre id="apiCode" style="display:none">// api/lead.js — drop this into the Vercel project, then set the env vars below.
+// The website already posts this exact shape; the CRM already reads it back.
+import { createClient } from &#x27;@supabase/supabase-js&#x27;;
+
+const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+export default async function handler(req, res) {
+  res.setHeader(&#x27;Access-Control-Allow-Origin&#x27;, process.env.SITE_ORIGIN || &#x27;*&#x27;);
+  res.setHeader(&#x27;Access-Control-Allow-Headers&#x27;, &#x27;Content-Type, Authorization&#x27;);
+  if (req.method === &#x27;OPTIONS&#x27;) return res.status(204).end();
+
+  // ---- the website posting a new enquiry ----
+  if (req.method === &#x27;POST&#x27;) {
+    const L = req.body || {};
+    if (!L.name || !(L.email || L.phone)) {
+      return res.status(400).json({ error: &#x27;name and an email or phone are required&#x27; });
+    }
+    // same id the browser generated, so a retry cannot create a second lead
+    const { data, error } = await db.from(&#x27;leads&#x27;)
+      .upsert({
+        payload_id: L.id, source: L.source || &#x27;website&#x27;, form: L.form || &#x27;&#x27;,
+        lang: L.lang === &#x27;fr&#x27; ? &#x27;fr&#x27; : &#x27;en&#x27;,
+        name: L.name, email: L.email || &#x27;&#x27;, phone: L.phone || &#x27;&#x27;,
+        event_type: L.event_type || &#x27;&#x27;, event_date: L.event_date || null,
+        guests: Number(L.guests) || 0, message: L.message || &#x27;&#x27;,
+        stage: &#x27;new&#x27;, created_at: new Date().toISOString()
+      }, { onConflict: &#x27;payload_id&#x27; })
+      .select(&#x27;id&#x27;).single();
+    if (error) return res.status(500).json({ error: error.message });
+    return res.status(200).json({ ok: true, id: data.id });
+  }
+
+  // ---- the CRM collecting them ----
+  if (req.method === &#x27;GET&#x27;) {
+    if (req.headers.authorization !== \`Bearer \${process.env.CRM_READ_TOKEN}\`) {
+      return res.status(401).json({ error: &#x27;unauthorized&#x27; });
+    }
+    const { data, error } = await db.from(&#x27;leads&#x27;)
+      .select(&#x27;*&#x27;).order(&#x27;created_at&#x27;, { ascending: false }).limit(200);
+    if (error) return res.status(500).json({ error: error.message });
+    return res.status(200).json({ leads: data });
+  }
+
+  return res.status(405).json({ error: &#x27;method not allowed&#x27; });
+}
+
+/* Environment variables to set in Vercel:
+     SUPABASE_URL
+     SUPABASE_SERVICE_ROLE_KEY   &lt;- server only, never in the page
+     CRM_READ_TOKEN              &lt;- any long random string
+     SITE_ORIGIN                 &lt;- https://nathancafefloral.com            */</pre>
+      <pre id="sqlCode" style="display:none">-- run once in the Supabase SQL editor
+create table if not exists leads (
+  id           uuid primary key default gen_random_uuid(),
+  payload_id   text unique,                 -- stops a retry creating a duplicate
+  source       text default &#x27;website&#x27;,
+  form         text,
+  lang         text default &#x27;en&#x27;,
+  name         text not null,
+  email        text,
+  phone        text,
+  event_type   text,
+  event_date   date,
+  guests       int default 0,
+  message      text,
+  stage        text default &#x27;new&#x27;,
+  created_at   timestamptz default now(),
+  updated_at   timestamptz default now()
+);
+create index if not exists leads_created_idx on leads (created_at desc);
+create index if not exists leads_stage_idx   on leads (stage);
+
+-- the public may insert an enquiry and read nothing back
+alter table leads enable row level security;
+create policy &quot;anon can submit&quot; on leads for insert to anon with check (true);
+-- reads go through the service-role key in api/lead.js, never from the browser</pre>
+      <ol style="font-size:12.8px;line-height:1.75;color:var(--muted);padding-left:18px;margin:0">
+        <li>Create the Supabase project and run the SQL.</li>
+        <li>Add <code>api/lead.js</code> to the Vercel project and set the four variables it lists.</li>
+        <li>On the website set <code>window.NCF_ENDPOINT = "https://…/api/lead"</code>.</li>
+        <li>Paste the same URL into the Inbox and press <b>Check now</b>.</li>
+      </ol>
+      <div class="banner b-warn" style="margin:14px 0 0"><span>⚠</span><span>
+        The service-role key belongs in Vercel's environment variables only. Anything placed
+        in the website file itself is readable by every visitor.</span></div>
+    </div>
+  </div>`;
+};
+
+NCF.copyCode=function(id,btn){
+  const txt=document.getElementById(id).textContent;
+  const done=()=>{const t=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=t,1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>NCF.fallbackCopy(txt,done));
+  } else NCF.fallbackCopy(txt,done);
+};
+NCF.fallbackCopy=function(txt,done){
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); done(); }catch(e){ alert('Copy failed — select the text manually.'); }
+  ta.remove();
+};
+
+NCF.v_settings=function(db){
+  const s=db.settings;
+  const counts=['contacts','leads','events','notes','review_requests']
+    .map(k=>`${db[k].length} ${k.replace('_',' ')}`).join(' · ');
+  return `
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><h3>Taxes &amp; currency</h3></div>
+      <div class="card-b">
+        <div class="row2">
+          <label class="field"><label>GST / TPS %</label>
+            <input class="inp" id="t_gst" type="number" step="0.001" value="${s.gst}"></label>
+          <label class="field"><label>QST / TVQ %</label>
+            <input class="inp" id="t_qst" type="number" step="0.001" value="${s.qst}"></label>
+        </div>
+        <label style="display:flex;gap:7px;align-items:center;font-size:12.5px;margin-bottom:12px">
+          <input type="checkbox" id="t_on"${s.taxes_on?' checked':''}> Apply taxes on new quotes by default</label>
+        <button class="btn btn-p" onclick="NCF.saveTax()">Save</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Your records</h3></div>
+      <div class="card-b">
+        <div style="font-size:13px;margin-bottom:4px"><b>${counts}</b></div>
+        <div class="hint" style="margin-bottom:14px">Stored in this browser. Export regularly —
+          clearing site data or switching device loses them.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="NCF.exportJSON()">Export JSON</button>
+          <button class="btn" onclick="$('#importFile').click()">Import JSON</button>
+          <button class="btn" onclick="NCF.seed()">Load sample records</button>
+          <button class="btn btn-d" onclick="NCF.wipe()">Erase everything</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </div>
+    </div>
+  </div>
+  <div class="banner b-warn" style="margin-top:18px"><span>⚠</span><span>
+    <b>This build is a working front end, not a production system.</b> It has no server,
+    no sign-in and no shared database, so treat it as the owner's own working copy on one
+    machine until the backend in <b>Integrations</b> is in place.</span></div>`;
+};
+NCF.saveTax=function(){
+  const s=NCF.store.all().settings;
+  s.gst=Number($('#t_gst').value)||0;
+  s.qst=Number($('#t_qst').value)||0;
+  s.taxes_on=$('#t_on').checked;
+  NCF.store.saveNow(); toast('Saved'); NCF.render();
+};
+NCF.exportJSON=function(){
+  const blob=new Blob([JSON.stringify(NCF.store.all(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='nathan-crm-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast('Exported');
+};
+NCF.wipe=function(){
+  if(!confirm('Erase every record in this workspace? Export first if you want a copy.')) return;
+  NCF.store.reset(); NCF.render(); toast('Workspace cleared');
+};
+</script>
+<script>
+/* ============================================================
+   INBOX — the bridge from the website's forms
+   Three ways in, all of them real:
+     1. paste the NCF-LEAD token the enquiry e-mail carries
+     2. drop the JSON a form provider exports
+     3. poll your own /api/lead route once the database is live
+   ============================================================ */
+NCF.parseLead=function(raw){
+  raw=(raw||'').trim(); if(!raw) return [];
+  const out=[];
+  // tokens pasted straight out of an e-mail
+  const re=/NCF-LEAD\.([A-Za-z0-9\-_]+)/g; let m;
+  while((m=re.exec(raw))){
+    try{
+      let b=m[1].replace(/-/g,'+').replace(/_/g,'/');
+      while(b.length%4) b+='=';
+      const bin=atob(b), bytes=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+      out.push(JSON.parse(new TextDecoder().decode(bytes)));
+    }catch(e){ /* a mangled token is skipped, never guessed at */ }
+  }
+  if(out.length) return out;
+  // or plain JSON
+  try{
+    const j=JSON.parse(raw);
+    return Array.isArray(j) ? j : [j];
+  }catch(e){ return []; }
+};
+
+NCF.receive=function(leads,how){
+  const db=NCF.store.all();
+  let added=0, dupes=0;
+  leads.forEach(L=>{
+    if(!L || typeof L!=='object') return;
+    const pid=L.id||('x'+JSON.stringify(L).length+(L.email||''));
+    if(db.inbox.some(i=>i.payload_id===pid)){ dupes++; return; }
+    db.inbox.unshift({
+      id:NCF.store.id('in'), payload_id:pid, received_at:new Date().toISOString(),
+      via:how||'paste', imported:false, lead_id:null, raw:L
+    });
+    added++;
+  });
+  NCF.store.saveNow();
+  return {added,dupes};
+};
+
+NCF.importItem=function(itemId){
+  const db=NCF.store.all();
+  const it=db.inbox.find(i=>i.id===itemId);
+  if(!it || it.imported) return;
+  const L=it.raw;
+  const lead=NCF.createLead({
+    name:L.name||'Unnamed enquiry', email:L.email||'', phone:L.phone||'',
+    language:(L.lang==='fr'?'fr':'en'),
+    event_type:NCF.normalType(L.event_type),
+    event_date:(L.event_date||'').slice(0,10),
+    guests:Number(L.guests)||0,
+    source:L.source||'website',
+    message:L.message||'',
+    stage:'new'
+  });
+  it.imported=true; it.lead_id=lead.id;
+  NCF.store.saveNow();
+  NCF.store.log('inbox','Website enquiry imported: '+(L.name||'unnamed'), lead.id);
+  return lead;
+};
+NCF.normalType=function(t){
+  if(!t) return 'Other';
+  const k=String(t).toLowerCase();
+  const hit=NCF.EVENT_TYPES.find(x=>x.toLowerCase()===k);
+  if(hit) return hit;
+  const alias={wedding:'Wedding',engagement:'Engagement',corporate:'Corporate',
+    birthday:'Birthday','baby shower':'Baby shower','bridal shower':'Bridal shower',
+    'brunch group':'Brunch group',other:'Other'};
+  return alias[k] || (t.charAt(0).toUpperCase()+t.slice(1));
+};
+NCF.importAll=function(){
+  const pend=NCF.store.all().inbox.filter(i=>!i.imported);
+  pend.forEach(i=>NCF.importItem(i.id));
+  NCF.render(); toast(pend.length+' enquiry'+(pend.length===1?'':'s')+' added to the board');
+};
+
+NCF.v_inbox=function(db){
+  const pend=db.inbox.filter(i=>!i.imported);
+  const done=db.inbox.filter(i=>i.imported);
+  const ep=db.settings.lead_endpoint||'';
+  return `
+  <div class="banner b-info"><span>ℹ</span><span>
+    <b>How an enquiry gets here.</b> A visitor submits a form on the website; the site
+    e-mails it to <b>${esc(db.knowledge.email)}</b> with a one-line <code>NCF-LEAD…</code>
+    token at the bottom. Paste that line below and the enquiry lands on the board with
+    every field already filled in. Once the database in <b>Integrations</b> is live, the
+    same records arrive here on their own.</span></div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><h3>Waiting to be added</h3>
+        ${pend.length?`<button class="btn btn-p btn-sm" style="margin-left:auto"
+          onclick="NCF.importAll()">Add all ${pend.length}</button>`:''}</div>
+      <div class="card-b" style="padding:${pend.length?'0':'18px'}">
+        ${pend.length? pend.map(i=>NCF.inboxRow(i)).join('') :
+          `<div class="empty" style="padding:30px 10px">
+            <p>Nothing waiting. Paste an enquiry on the right, or wait for the next one.</p></div>`}
+      </div>
+      ${done.length?`<div class="card-b" style="border-top:1px solid var(--line)">
+        <div style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+                    color:var(--muted);font-weight:700;margin-bottom:9px">Already added</div>
+        ${done.slice(0,8).map(i=>`<div style="display:flex;gap:9px;align-items:center;
+          font-size:12.5px;padding:5px 0;color:var(--muted)">
+          <span class="tag t-ok" style="font-size:10px">Added</span>
+          <span>${esc(i.raw.name||'unnamed')}</span>
+          <span style="margin-left:auto">${ago(i.received_at)}</span>
+          ${i.lead_id?`<button class="btn btn-sm" onclick="NCF.openLead('${i.lead_id}')">Open</button>`:''}
+        </div>`).join('')}
+      </div>`:''}
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-h"><h3>Paste an enquiry</h3></div>
+        <div class="card-b">
+          <textarea class="inp" id="pasteBox" style="min-height:120px;font-family:ui-monospace,monospace;font-size:12px"
+            placeholder="Paste the whole e-mail, or just the NCF-LEAD… line."></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn btn-p" onclick="NCF.doPaste()">Read it</button>
+            <button class="btn" onclick="$('#leadFile').click()">Open a JSON file</button>
+          </div>
+          <input type="file" id="leadFile" accept="application/json,.json,.txt" hidden>
+          <div class="hint" style="margin-top:9px">Pasting the same enquiry twice is safe —
+            it is matched on its id and will not be added again.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="card-h"><h3>Automatic collection</h3></div>
+        <div class="card-b">
+          <label class="field"><label>Your /api/lead URL</label>
+            <input class="inp" id="epBox" value="${esc(ep)}"
+              placeholder="https://nathancafefloral.com/api/lead"></label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" onclick="NCF.saveEndpoint()">Save</button>
+            <button class="btn" onclick="NCF.pollEndpoint()">Check now</button>
+          </div>
+          <div id="epStatus" style="margin-top:10px">${
+            ep? '<span class="tag t-warn"><span class="dot"></span>Saved, never reached yet</span>'
+              : '<span class="tag t-mute"><span class="dot"></span>No endpoint set</span>'}</div>
+          <div class="hint" style="margin-top:9px">Until this route exists and answers,
+            the paste box above is the way enquiries get in. Nothing here pretends otherwise.</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+};
+
+NCF.inboxRow=function(i){
+  const L=i.raw;
+  return `<div style="padding:13px 18px;border-bottom:1px solid var(--line)">
+    <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+      <b style="font-size:13.5px;color:var(--violet-deep)">${esc(L.name||'Unnamed enquiry')}</b>
+      <span class="tag t-info" style="font-size:10px">${esc(L.form==='brunchForm'?'Brunch':'Event')}</span>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">${ago(i.received_at)}</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);margin-top:4px">
+      ${esc(NCF.normalType(L.event_type))}${L.event_date?' · '+fdate(L.event_date):''}${L.guests?' · '+L.guests+' guests':''}
+      ${L.email?'<br>'+esc(L.email):''}${L.phone?' · '+esc(L.phone):''}
+    </div>
+    ${L.message?`<div style="font-size:12.5px;margin-top:7px;padding:8px 10px;background:var(--lilac-mist);
+      border-radius:6px;line-height:1.5">${esc(L.message).slice(0,240)}</div>`:''}
+    <div style="display:flex;gap:7px;margin-top:10px">
+      <button class="btn btn-p btn-sm" onclick="NCF.importOne('${i.id}')">Add to board</button>
+      <button class="btn btn-sm" onclick="NCF.dropInbox('${i.id}')">Discard</button>
+    </div>
+  </div>`;
+};
+NCF.importOne=function(id){
+  const l=NCF.importItem(id);
+  NCF.render(); if(l){ toast('Added to the board'); NCF.openLead(l.id); }
+};
+NCF.dropInbox=function(id){
+  const db=NCF.store.all();
+  db.inbox=db.inbox.filter(i=>i.id!==id);
+  NCF.store.saveNow(); NCF.render(); toast('Discarded');
+};
+NCF.doPaste=function(){
+  const box=$('#pasteBox'); const leads=NCF.parseLead(box.value);
+  if(!leads.length){
+    toast('Nothing readable in that — look for the NCF-LEAD… line');
+    return;
+  }
+  const r=NCF.receive(leads,'paste');
+  box.value='';
+  NCF.render();
+  toast(r.added? r.added+' enquiry'+(r.added===1?'':'s')+' read'+(r.dupes?', '+r.dupes+' already here':'')
+       : 'Already in the inbox');
+};
+NCF.saveEndpoint=function(){
+  NCF.store.all().settings.lead_endpoint=$('#epBox').value.trim();
+  NCF.store.saveNow(); toast('Saved'); NCF.render();
+};
+NCF.pollEndpoint=function(){
+  const url=(NCF.store.all().settings.lead_endpoint||'').trim();
+  const st=$('#epStatus');
+  if(!url){ st.innerHTML='<span class="tag t-mute">Enter a URL first</span>'; return; }
+  st.innerHTML='<span class="tag t-info">Checking…</span>';
+  fetch(url,{headers:{'Accept':'application/json'}})
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(j=>{
+      const arr=Array.isArray(j)?j:(Array.isArray(j.leads)?j.leads:[j]);
+      const r=NCF.receive(arr,'endpoint');
+      st.innerHTML='<span class="tag t-ok"><span class="dot"></span>Reached — '+
+        r.added+' new, '+r.dupes+' already here</span>';
+      NCF.render();
+    })
+    .catch(e=>{
+      st.innerHTML='<span class="tag t-bad"><span class="dot"></span>Could not reach it — '+
+        esc(e.message)+'</span>';
+    });
+};
+NCF.after_inbox=function(){
+  const f=$('#leadFile'); if(!f) return;
+  f.onchange=()=>{
+    const file=f.files[0]; if(!file) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const leads=NCF.parseLead(rd.result);
+      if(!leads.length){ alert('No enquiries could be read from that file.'); return; }
+      const r=NCF.receive(leads,'file');
+      NCF.render(); toast(r.added+' read, '+r.dupes+' already here');
+    };
+    rd.readAsText(file);
+  };
+};
+</script>
+
+<script>
+/* ============================================================
+   SAMPLE RECORDS — clearly marked, never presented as real
+   ============================================================ */
+NCF.seed=function(){
+  if(NCF.store.table('leads').some(l=>l.demo)){ toast('Sample records are already loaded'); return; }
+  const d=n=>{const x=new Date();x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
+  const kb=NCF.store.all().knowledge;
+  const rows=[
+    {name:'SAMPLE — Marie Dupont', email:'sample.marie@example.com', phone:'514-555-0101',
+     language:'fr', event_type:'Wedding', event_date:d(62), guests:44, source:'website',
+     stage:'new', message:'Nous cherchons une salle pour un mariage intime.'},
+    {name:'SAMPLE — Alexandre Tremblay', email:'sample.alex@example.com', phone:'514-555-0102',
+     language:'fr', event_type:'Corporate', event_date:d(28), guests:30, source:'whatsapp',
+     stage:'contacted', message:'Soirée d\'équipe, 30 personnes.'},
+    {name:'SAMPLE — Sophie Martin', email:'sample.sophie@example.com', phone:'514-555-0103',
+     language:'en', event_type:'Birthday', event_date:d(19), guests:25, source:'ai',
+     stage:'qualified', message:'40th birthday, evening, bar service.'},
+    {name:'SAMPLE — Jade Rousseau', email:'sample.jade@example.com', phone:'514-555-0104',
+     language:'fr', event_type:'Bridal shower', event_date:d(40), guests:35, source:'phone',
+     stage:'visit', message:'Visite prévue.'},
+    {name:'SAMPLE — Daniel Okonkwo', email:'sample.daniel@example.com', phone:'514-555-0105',
+     language:'en', event_type:'Engagement', event_date:d(75), guests:50, source:'website',
+     stage:'proposal', message:'Engagement party, proposal sent.'},
+    {name:'SAMPLE — Lina Haddad', email:'sample.lina@example.com', phone:'514-555-0106',
+     language:'en', event_type:'Wedding', event_date:d(12), guests:48, source:'website',
+     stage:'booked', message:'Deposit paid, confirmed.'},
+    {name:'SAMPLE — Chloé Bergeron', email:'sample.chloe@example.com', phone:'514-555-0107',
+     language:'fr', event_type:'Baby shower', event_date:d(-9), guests:28, source:'ai',
+     stage:'completed', message:'Événement passé.'},
+    {name:'SAMPLE — Victor Nunes', email:'sample.victor@example.com', phone:'514-555-0108',
+     language:'en', event_type:'Corporate', event_date:d(34), guests:70, source:'website',
+     stage:'lost', message:'Needed 70 seated — above capacity.'}
+  ];
+  rows.forEach((r,i)=>{
+    const l=NCF.createLead({...r, demo:true});
+    const c=NCF.contact(l.contact_id);
+    c.demo=true;
+    if(i%2===0) c.consent_email=true;
+    l.quote={...NCF.blankQuote(),
+      lines:[{id:NCF.store.id('ln'),label:'Private room rental',qty:1,unit:kb.room_fee},
+             ...(i%3===0?[{id:NCF.store.id('ln'),label:'Balloon styling',qty:1,unit:kb.balloons_from}]:[])]};
+    if(['booked','completed'].includes(r.stage)){
+      NCF.store.table('events').push({
+        id:NCF.store.id('evt'), lead_id:l.id, contact_id:l.contact_id,
+        title:c.name+' — '+l.event_type, date:l.event_date, start_time:'', end_time:'',
+        status:r.stage==='completed'?'completed':'confirmed', page_published:false,
+        created_at:new Date().toISOString(), demo:true});
+    }
+    if(r.stage==='completed'){
+      const ev=NCF.store.table('events').find(e=>e.lead_id===l.id);
+      if(ev) NCF.scheduleReview(ev);
+    }
+  });
+  NCF.store.table('leads').forEach(l=>{ if(l.demo && l.stage==='new') l.follow_up=d(-2); });
+  NCF.store.saveNow();
+  NCF.store.log('system','Sample records loaded');
+  NCF.render();
+  toast('8 sample records loaded — every one is labelled SAMPLE');
+};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(function(){
+  $('#nav').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-view]'); if(b) NCF.go(b.dataset.view);
+  });
+  $('#burger').onclick=()=>$('#side').classList.toggle('on');
+  $('#scrim').onclick=()=>{ NCF.closeDrawer(); $('#side').classList.remove('on'); };
+  $('#dwClose').onclick=()=>NCF.closeDrawer();
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ NCF.closeDrawer(); $('#side').classList.remove('on'); }
+  });
+  document.addEventListener('change',e=>{
+    if(e.target.id!=='importFile') return;
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const obj=JSON.parse(r.result);
+        if(!obj || !Array.isArray(obj.leads)) throw new Error('not a CRM export');
+        if(!confirm('Replace everything in this workspace with the file\'s records?')) return;
+        NCF.store.replace(obj); NCF.render(); toast('Records imported');
+      }catch(err){ alert('That file could not be read as a CRM export.\n\n'+err.message); }
+    };
+    r.readAsText(f);
+  });
+  NCF.go('dash');
+})();
+</script>
+</body>
+</html>
