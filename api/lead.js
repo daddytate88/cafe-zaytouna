@@ -47,7 +47,15 @@ export default async function handler(req, res) {
         [JSON.stringify(payload)]
       );
       const r = rows[0];
-      // "created: false" means this was a retry of a submission already stored
+
+      // A daily platform cron cannot drive a 30-minute follow-up by itself,
+      // so each submission also drains whatever is already due. This is a
+      // safety net, not the scheduler: /api/cron/run-jobs is still the
+      // reliable path and should be called every minute.
+      db().query('select * from claim_jobs($1,$2)', ['inline-drain', 3])
+        .catch((e) => console.error('inline drain failed', e));
+
+      // "duplicate: true" means this was a retry of a submission already stored
       return res.status(200).json({
         ok: true, id: r.lead_id, contact_id: r.contact_id, duplicate: !r.created
       });

@@ -63,12 +63,12 @@
   "crons": [
     {
       "path": "/api/cron/run-jobs",
-      "schedule": "* * * * *"
+      "schedule": "0 11 * * *"
     }
   ],
   "functions": {
     "api/**/*.js": {
-      "maxDuration": 30
+      "maxDuration": 20
     }
   }
 }
