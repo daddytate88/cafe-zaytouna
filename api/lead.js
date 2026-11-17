@@ -55,6 +55,12 @@ export default async function handler(req, res) {
       db().query('select * from claim_jobs($1,$2)', ['inline-drain', 3])
         .catch((e) => console.error('inline drain failed', e));
 
+      // Fire-and-forget email alert to the owner — never blocks the response
+      if (!r.created === false) {
+        // only on genuinely new leads (created = true)
+        sendOwnerEmail(payload).catch((e) => console.error('owner email failed', e));
+      }
+
       // "duplicate: true" means this was a retry of a submission already stored
       return res.status(200).json({
         ok: true, id: r.lead_id, contact_id: r.contact_id, duplicate: !r.created
@@ -93,4 +99,57 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ error: 'method not allowed' });
+}
+
+// ── Email alert ───────────────────────────────────────────────────────────────
+async function sendOwnerEmail(payload) {
+  const apiKey  = process.env.EMAIL_PROVIDER_API_KEY;
+  const toEmail = process.env.OWNER_EMAIL;
+  if (!apiKey || !toEmail) return; // silently skip if not configured
+
+  const eventDate  = payload.event_date || 'Not specified';
+  const eventType  = payload.event_type || 'Not specified';
+  const guests     = payload.guests     || 'Not specified';
+  const budget     = payload.budget_band || 'Not specified';
+  const phone      = payload.phone      || '—';
+  const email      = payload.email      || '—';
+  const message    = payload.message    || '—';
+
+  const html = `
+<div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#222">
+  <div style="background:#2d4a3e;padding:24px 32px;border-radius:8px 8px 0 0">
+    <h1 style="margin:0;color:#fff;font-size:20px">New Inquiry — Nathan Café Floral</h1>
+  </div>
+  <div style="background:#f9f9f7;padding:24px 32px;border-radius:0 0 8px 8px;border:1px solid #e5e5e0">
+    <table style="width:100%;border-collapse:collapse">
+      <tr><td style="padding:8px 0;font-weight:600;width:140px">Name</td><td>${payload.name}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600">Email</td><td>${email}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600">Phone</td><td>${phone}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600">Event type</td><td>${eventType}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600">Event date</td><td>${eventDate}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600">Guests</td><td>${guests}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600">Budget</td><td>${budget}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:600;vertical-align:top">Message</td><td>${message}</td></tr>
+    </table>
+    <div style="margin-top:24px">
+      <a href="https://nathan-cafe-floral.vercel.app/crm" style="background:#2d4a3e;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">Open CRM →</a>
+    </div>
+  </div>
+</div>`;
+
+  const resp = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'Nathan Café Floral <onboarding@resend.dev>',
+      to:   [toEmail],
+      subject: `New inquiry from ${payload.name} — Nathan Café Floral`,
+      html
+    })
+  });
+
+  if (!resp.ok) {
+    const txt = await resp.text().catch(() => '');
+    throw new Error(`Resend ${resp.status}: ${txt}`);
+  }
 }
