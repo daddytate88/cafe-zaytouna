@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
+Allow: /api/health
 Disallow: /crm
 Disallow: /api
-Allow: /api/health
