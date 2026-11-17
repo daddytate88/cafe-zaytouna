@@ -2530,6 +2530,14 @@ document.getElementById('langFR').addEventListener('click', ()=> applyLang('fr')
    endpoint instead and put that URL here. */
 window.NCF_ENDPOINT = "";
 
+/* Served from the live site, the forms post to this site's own /api/lead.
+   Opened as a local file there is no server, so they stay honest and say
+   nothing was sent. Set NCF_ENDPOINT above to override, for instance to
+   point at a form-to-email service instead. */
+if (!window.NCF_ENDPOINT && location.protocol.indexOf('http') === 0) {
+  window.NCF_ENDPOINT = location.origin + '/api/lead';
+}
+
 (function(){
   var VENUE_EMAIL = "Info@nathancafefloral.com";
 
@@ -2609,16 +2617,26 @@ window.NCF_ENDPOINT = "";
           ? {'Content-Type':'application/json','Accept':'application/json'}
           : {'Accept':'application/json'}
       })
-      .then(function(r){ if(!r.ok) throw new Error(r.status); return r; })
+      .then(function(r){
+        if(r.status === 503){ var e = new Error('not_configured'); e.notConfigured = true; throw e; }
+        if(!r.ok) throw new Error(r.status);
+        return r;
+      })
       .then(function(){
         box.textContent = NF_T(okKey, okFb);
         box.classList.remove('err'); box.classList.add('show','ok');
         try{ window.dispatchEvent(new CustomEvent('ncf:lead',{detail:lead})); }catch(err){}
         f.reset();
       })
-      .catch(function(){
-        box.textContent = NF_T('form.status.failed',
-          'That did not go through. Please email ' + VENUE_EMAIL + ' or call us.');
+      .catch(function(err){
+        if(err && err.notConfigured){
+          // the site is deployed but the database is not connected yet
+          box.textContent = NF_T('form.status.notwired',
+            'This form is not connected yet. Please email ' + VENUE_EMAIL + ' or call us.');
+        } else {
+          box.textContent = NF_T('form.status.failed',
+            'That did not go through. Please email ' + VENUE_EMAIL + ' or call us.');
+        }
         box.classList.remove('ok'); box.classList.add('show','err');
       })
       .finally(function(){ if(btn){ btn.disabled = false; btn.textContent = label; } });
