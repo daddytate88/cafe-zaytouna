@@ -3,7 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nathan Café Floral — Specialty Coffee, Private Event &amp; Wedding Venue | Ahuntsic, Montréal</title>
+<title>Nathan Café Floral — Specialty Coffee, Floral Studio & Private Events in Montréal</title>
+<meta name="description" content="Nathan Café Floral — Montréal's intimate destination for specialty coffee, professional floral services, and private events. Saturday brunch, weddings, celebrations. Ahuntsic.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nathancafefloral.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nathan Café Floral">
+<meta property="og:title" content="Nathan Café Floral — Coffee, Flowers & Private Events in Montréal">
+<meta property="og:description" content="Specialty coffee, professional floral services, and intimate private events in the heart of Montréal. Saturday brunch by reservation.">
+<meta property="og:url" content="https://nathancafefloral.com/">
+<meta property="og:locale" content="en_CA">
+<meta property="og:locale:alternate" content="fr_CA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nathan Café Floral — Montréal">
+<meta name="twitter:description" content="Specialty coffee, floral studio, and private events in Montréal. Saturday brunch by reservation.">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"CafeOrCoffeeShop","@id":"https://nathancafefloral.com/#cafe","name":"Nathan Café Floral","description":"Specialty coffee, professional floral services, and intimate private events in Montréal, Québec.","url":"https://nathancafefloral.com","telephone":"+15144373234","email":"Info@nathancafefloral.com","address":{"@type":"PostalAddress","addressLocality":"Montréal","addressRegion":"QC","addressCountry":"CA"},"geo":{"@type":"GeoCoordinates","latitude":45.5577,"longitude":-73.6617},"servesCuisine":["Coffee","Brunch"],"hasMap":"https://maps.google.com/?q=Nathan+Café+Floral+Montréal","openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"17:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday"],"opens":"10:00","closes":"14:30"}],"sameAs":["https://www.instagram.com/nathancafefloral"]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"EventVenue","name":"Nathan Café Floral — Private Events","description":"Intimate private event venue in Montréal for weddings, engagements, birthday celebrations, and corporate events. Up to 50 seated guests.","url":"https://nathancafefloral.com/#venue","address":{"@type":"PostalAddress","addressLocality":"Montréal","addressRegion":"QC","addressCountry":"CA"},"maximumAttendeeCapacity":50}
+</script>
 <meta name="description" content="Specialty coffee café and private event venue at 1350 Mazurette, Ahuntsic-Cartierville, Montréal, near Marché Central. Intimate weddings, receptions and private parties for up to 50 guests, plus Saturday brunch by reservation.">
 <meta name="theme-color" content="#493269">
 <link rel="icon" href="data:,">
@@ -640,27 +659,241 @@ footer{ background:var(--charcoal); color:rgba(255,250,244,.72); padding:70px 0 
 .sticky-cta a{ font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; border:1px solid rgba(255,250,244,.5); padding:10px 16px; border-radius:2px; white-space:nowrap; }
 @media(max-width:760px){ .sticky-cta{ display:flex; } }
 
+/* ============ POST-INQUIRY CONFIRMATION OVERLAY ============ */
+.ncf-confirm-overlay{
+  background:
+    radial-gradient(80% 60% at 10% 0%, var(--lilac-mist) 0%, transparent 55%),
+    radial-gradient(60% 50% at 90% 100%, var(--lilac-soft) 0%, transparent 60%),
+    var(--ivory);
+  padding:7rem 2rem 6rem;
+  display:flex; align-items:center; justify-content:center;
+}
+.ncf-confirm-overlay[hidden]{ display:none; }
+.ncf-confirm-inner{
+  max-width:640px; width:100%;
+  text-align:center;
+}
+.ncf-confirm-badge{
+  display:inline-flex; margin-bottom:1.6rem;
+}
+.ncf-confirm-h{
+  font-family:var(--serif); font-size:clamp(1.65rem,4vw,2.3rem);
+  font-weight:400; color:var(--espresso); line-height:1.25;
+  margin:0 0 1rem;
+}
+.ncf-confirm-name{
+  display:block; font-style:italic; color:var(--violet); font-size:1.08em;
+}
+.ncf-confirm-sub{
+  font-family:var(--sans); font-size:1rem; color:var(--espresso-soft);
+  line-height:1.65; max-width:480px; margin:0 auto 2.8rem;
+}
+.ncf-steps{
+  display:flex; flex-direction:column; gap:0;
+  text-align:left; margin-bottom:3rem;
+}
+.ncf-step{
+  display:flex; gap:1.4rem; align-items:flex-start;
+  padding:1.5rem 1.6rem;
+  background:var(--white); border:1px solid var(--beige);
+  border-radius:0; margin-top:-1px;
+  position:relative;
+}
+.ncf-step:first-child{ border-radius:4px 4px 0 0; }
+.ncf-step:last-child{ border-radius:0 0 4px 4px; }
+.ncf-step::before{
+  content:''; position:absolute; left:calc(1.6rem + 20px);
+  top:calc(1.5rem + 42px); width:2px; height:calc(100% - 1.5rem - 42px + 1px);
+  background:var(--lilac); pointer-events:none;
+}
+.ncf-step:last-child::before{ display:none; }
+.ncf-step-num{
+  flex:none; width:42px; height:42px; border-radius:50%;
+  background:var(--lilac-mist); border:1.5px solid var(--lilac);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--serif); font-size:1.1rem; color:var(--violet);
+  font-style:italic; line-height:1; margin-top:.1rem;
+}
+.ncf-step-body h3{
+  font-family:var(--sans); font-size:.9rem; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--espresso); font-weight:600;
+  margin:0 0 .4rem;
+}
+.ncf-step-body p{
+  font-family:var(--sans); font-size:.93rem; color:var(--espresso-soft);
+  line-height:1.65; margin:0;
+}
+.ncf-confirm-cta{
+  display:flex; flex-direction:column; align-items:center; gap:.8rem;
+}
+.ncf-confirm-note{
+  font-family:var(--sans); font-size:.82rem; color:var(--espresso-soft);
+  opacity:.8; margin:0;
+}
+@media(max-width:600px){
+  .ncf-confirm-overlay{ padding:4rem 1.4rem 4rem; }
+  .ncf-step{ padding:1.2rem 1.2rem; gap:1rem; }
+  .ncf-step::before{ left:calc(1.2rem + 20px); }
+}
+
 /* ============ SATURDAY BRUNCH ============ */
-.section-brunch{background:
-   radial-gradient(90% 70% at 12% 0%, var(--lilac-mist) 0%, transparent 62%),
-   radial-gradient(70% 60% at 100% 100%, var(--lilac-soft) 0%, transparent 60%),
-   var(--ivory)}
-.brunch-head{max-width:46rem}
-.brunch-first{margin-top:1.1rem;font-family:var(--sans);font-size:.92rem;
-  letter-spacing:.04em;color:var(--espresso-soft)}
-.brunch-first strong{color:var(--violet);font-weight:600}
+/* ======================================================
+   SATURDAY BRUNCH — Premium Redesign
+   ====================================================== */
+.section-brunch{
+  position:relative; overflow:hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% -10%, rgba(197,181,222,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 110%, rgba(197,181,222,.18) 0%, transparent 60%),
+    var(--ivory);
+  padding-top:5rem; padding-bottom:0;
+}
+/* Decorative background orbs */
+.brunch-hero{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.brunch-hero-orb{
+  position:absolute; border-radius:50%;
+  animation:brunch-drift 18s ease-in-out infinite alternate;
+}
+.brunch-orb-1{
+  width:520px; height:520px; top:-140px; left:-140px;
+  background:radial-gradient(circle, rgba(197,181,222,.18) 0%, transparent 70%);
+  animation-duration:22s;
+}
+.brunch-orb-2{
+  width:380px; height:380px; bottom:-100px; right:-80px;
+  background:radial-gradient(circle, rgba(197,181,222,.14) 0%, transparent 70%);
+  animation-duration:17s; animation-delay:-8s;
+}
+.brunch-orb-3{
+  width:260px; height:260px; top:30%; left:40%;
+  background:radial-gradient(circle, rgba(222,215,197,.12) 0%, transparent 70%);
+  animation-duration:14s; animation-delay:-4s;
+}
+@keyframes brunch-drift{
+  0%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(30px,-20px) scale(1.04);}
+  100%{transform:translate(-15px,25px) scale(.97);}
+}
+/* Floating florets */
+.brunch-floret{
+  position:absolute; font-size:1.2rem; opacity:.18; color:var(--violet);
+  animation:floret-float 12s ease-in-out infinite alternate;
+  pointer-events:none; user-select:none;
+}
+.brunch-f1{top:12%; left:5%; animation-duration:14s;}
+.brunch-f2{top:60%; right:6%; animation-duration:11s; animation-delay:-5s; font-size:1rem; opacity:.12;}
+.brunch-f3{bottom:15%; left:28%; animation-duration:9s; animation-delay:-2s; font-size:.85rem; opacity:.1;}
+@keyframes floret-float{
+  0%{transform:translateY(0) rotate(0deg);}
+  100%{transform:translateY(-18px) rotate(20deg);}
+}
 
-.brunch-services{display:flex;align-items:stretch;gap:0;margin:2.6rem 0 2.2rem;
-  background:var(--white);border:1px solid var(--beige);border-radius:4px;
-  max-width:46rem;overflow:hidden}
-.svc{flex:1;padding:1.5rem 1.6rem;display:flex;flex-direction:column;gap:.35rem}
-.svc-div{width:1px;background:var(--beige);flex:none}
-.svc-k{font-family:var(--sans);font-size:.72rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--espresso-soft)}
-.svc-t{font-family:var(--serif);font-size:2.3rem;line-height:1;color:var(--violet)}
-.svc-n{font-family:var(--sans);font-size:.82rem;color:var(--espresso-soft)}
+/* Two-column layout */
+.brunch-layout{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:0 5rem; align-items:start;
+  position:relative; z-index:1;
+}
+.brunch-editorial{ padding-bottom:5rem; }
 
-.brunch-form{max-width:46rem;margin-top:.5rem}
+/* Pill badge */
+.brunch-pill{
+  display:inline-flex; align-items:center; gap:.55rem;
+  background:rgba(197,181,222,.18); border:1px solid rgba(197,181,222,.4);
+  border-radius:40px; padding:.35rem 1rem .35rem .65rem;
+  font-family:var(--sans); font-size:.72rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--violet); margin-bottom:1.4rem;
+}
+.brunch-pill-dot{
+  width:7px; height:7px; border-radius:50%; background:var(--violet); flex:none;
+  animation:pill-pulse 2.4s ease-in-out infinite;
+}
+@keyframes pill-pulse{
+  0%,100%{opacity:1; transform:scale(1);}
+  50%{opacity:.45; transform:scale(.7);}
+}
+
+/* Headline */
+.brunch-h{
+  font-family:var(--serif); font-size:clamp(2.6rem,5.5vw,4rem);
+  font-weight:400; color:var(--espresso); line-height:1.1;
+  margin:0 0 1.2rem; letter-spacing:-.01em;
+}
+.brunch-h em{ color:var(--violet); font-style:italic; display:block; }
+
+/* Description */
+.brunch-desc{
+  font-family:var(--sans); font-size:1.02rem; color:var(--espresso-soft);
+  line-height:1.7; max-width:34rem; margin:0 0 1.4rem;
+}
+.brunch-launch{
+  font-family:var(--sans); font-size:.88rem; letter-spacing:.04em;
+  color:var(--espresso-soft); margin-bottom:2.2rem;
+}
+.brunch-launch strong{ color:var(--violet); font-weight:600; }
+.brunch-launch-label{ margin-right:.4em; }
+
+/* Seating cards — premium */
+.brunch-seats{ display:flex; flex-direction:column; gap:.85rem; }
+.seat-card{
+  position:relative; overflow:hidden;
+  background:var(--white);
+  border:1px solid rgba(197,181,222,.35);
+  border-radius:10px;
+  padding:1.5rem 1.7rem;
+  cursor:default;
+  transition:border-color .3s var(--ease), transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.seat-card:hover{
+  border-color:var(--lilac);
+  transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(133,105,175,.1);
+}
+.seat-card-glow{
+  position:absolute; inset:0; border-radius:inherit;
+  background:radial-gradient(ellipse 80% 80% at 0% 0%, rgba(197,181,222,.22) 0%, transparent 60%);
+  pointer-events:none; opacity:0; transition:opacity .4s var(--ease);
+}
+.seat-card:hover .seat-card-glow{ opacity:1; }
+.seat-card-1{ border-left:3px solid var(--lilac); }
+.seat-card-2{ border-left:3px solid rgba(197,181,222,.55); }
+
+.seat-card-inner{ position:relative; z-index:1; }
+.seat-label{
+  display:block;
+  font-family:var(--sans); font-size:.68rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--espresso-soft); margin-bottom:.5rem;
+}
+.seat-time{
+  font-family:var(--serif); font-size:3.2rem; line-height:1; color:var(--violet);
+  letter-spacing:-.02em; margin-bottom:.6rem;
+}
+.seat-sep{ opacity:.5; margin:0 .05em; }
+.seat-meta{
+  display:flex; align-items:center; gap:.6rem;
+  font-family:var(--sans); font-size:.8rem; color:var(--espresso-soft);
+}
+.seat-dot{
+  width:3px; height:3px; border-radius:50%; background:var(--espresso-soft); opacity:.5; flex:none;
+}
+
+/* Form column */
+.brunch-form-wrap{
+  background:var(--white);
+  border:1px solid var(--beige);
+  border-radius:12px 12px 0 0;
+  padding:2.4rem 2.2rem 0;
+  box-shadow:0 -4px 32px rgba(133,105,175,.06);
+  position:sticky; top:80px;
+  min-height:calc(100% + 5rem);
+}
+.brunch-form-wrap::before{
+  content:'Book a table';
+  display:block;
+  font-family:var(--sans); font-size:.72rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--violet); margin-bottom:1.4rem;
+}
+.brunch-form{ margin:0; }
 .bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem 1.4rem;margin-bottom:1.6rem}
 .bf-row{display:flex;flex-direction:column;gap:.45rem}
 .bf-row-full{grid-column:1/-1}
@@ -669,17 +902,29 @@ footer{ background:var(--charcoal); color:rgba(255,250,244,.72); padding:70px 0 
 .bf-row label .opt{text-transform:none;letter-spacing:.02em;opacity:.7}
 .bf-row input,.bf-row select,.bf-row textarea{
   font-family:var(--sans);font-size:.95rem;color:var(--espresso);
-  background:var(--white);border:1px solid var(--beige);border-radius:3px;
-  padding:.72rem .85rem;width:100%;transition:border-color .25s var(--ease),box-shadow .25s var(--ease)}
+  background:var(--ivory);border:1px solid var(--beige);border-radius:6px;
+  padding:.75rem .9rem;width:100%;transition:border-color .25s var(--ease),box-shadow .25s var(--ease)}
 .bf-row input:focus,.bf-row select:focus,.bf-row textarea:focus{
-  outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--lilac-soft)}
+  outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(197,181,222,.28)}
 .bf-row textarea{resize:vertical}
 .brunch-form [data-field].invalid input,
 .brunch-form [data-field].invalid select{border-color:#B3261E;box-shadow:0 0 0 3px rgba(179,38,30,.1)}
-@media(max-width:700px){
+
+@media(max-width:980px){
+  .brunch-layout{
+    grid-template-columns:1fr; gap:0;
+  }
+  .brunch-editorial{ padding-bottom:2.5rem; }
+  .brunch-form-wrap{
+    border-radius:12px; position:static; min-height:auto;
+    margin-bottom:4rem; padding:2rem 1.6rem 1.6rem;
+  }
+  .brunch-h{ font-size:clamp(2.2rem,8vw,3rem); }
+}
+@media(max-width:600px){
   .bf-grid{grid-template-columns:1fr}
-  .brunch-services{flex-direction:column}
-  .svc-div{width:auto;height:1px}
+  .brunch-seats{flex-direction:column}
+  .seat-time{font-size:2.6rem}
 }
 
 /* ============ FLORAL — partner studio ============ */
@@ -1311,29 +1556,64 @@ body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:152px}
 
 <!-- ============ SATURDAY BRUNCH ============ -->
 <section class="section section-brunch" id="brunch">
-  <div class="container">
-    <div class="sec-head brunch-head" data-reveal>
-      <div class="eyebrow" data-i18n="brunch.eyebrow">Saturdays at Nathan</div>
-      <h2><span data-i18n="brunch.h2a">Saturday</span> <em data-i18n="brunch.h2b">Brunch</em></h2>
-      <p data-i18n="brunch.lede">Two seatings every Saturday, in the calm of the café. Forty places per seating, and tables are released in advance — reserving ahead is the surest way to get the time you want.</p>
-      <p class="brunch-first"><span data-i18n="brunch.first">First brunch:</span> <strong data-i18n="brunch.firstdate">Saturday 28 November 2026</strong></p>
+  <div class="brunch-hero" aria-hidden="true">
+    <div class="brunch-hero-orb brunch-orb-1"></div>
+    <div class="brunch-hero-orb brunch-orb-2"></div>
+    <div class="brunch-hero-orb brunch-orb-3"></div>
+    <div class="brunch-floret brunch-f1" aria-hidden="true">✿</div>
+    <div class="brunch-floret brunch-f2" aria-hidden="true">❋</div>
+    <div class="brunch-floret brunch-f3" aria-hidden="true">✾</div>
+  </div>
+  <div class="container brunch-layout">
+    <!-- Left: editorial text + seatings -->
+    <div class="brunch-editorial">
+      <div class="brunch-pill" data-reveal>
+        <span class="brunch-pill-dot" aria-hidden="true"></span>
+        <span data-i18n="brunch.eyebrow">Saturdays at Nathan</span>
+      </div>
+      <h2 class="brunch-h" data-reveal data-reveal-delay="1">
+        <span data-i18n="brunch.h2a">Saturday</span>
+        <br><em data-i18n="brunch.h2b">Brunch</em>
+      </h2>
+      <p class="brunch-desc" data-reveal data-reveal-delay="2" data-i18n="brunch.lede">Two seatings every Saturday, in the calm of the café. Forty places per seating, and tables are released in advance — reserving ahead is the surest way to get the time you want.</p>
+      <p class="brunch-launch" data-reveal data-reveal-delay="3">
+        <span class="brunch-launch-label" data-i18n="brunch.first">First brunch:</span>
+        <strong data-i18n="brunch.firstdate">Saturday 28 November 2026</strong>
+      </p>
+
+      <!-- Seating cards — premium redesign -->
+      <div class="brunch-seats" data-reveal data-reveal-delay="4">
+        <div class="seat-card seat-card-1">
+          <div class="seat-card-glow" aria-hidden="true"></div>
+          <div class="seat-card-inner">
+            <span class="seat-label" data-i18n="brunch.svc1k">First seating</span>
+            <div class="seat-time">10<span class="seat-sep">:</span>00</div>
+            <div class="seat-meta">
+              <span class="seat-spots" data-i18n="brunch.seats">40 places</span>
+              <span class="seat-dot" aria-hidden="true"></span>
+              <span class="seat-dur">2 h 15 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="seat-card seat-card-2">
+          <div class="seat-card-glow" aria-hidden="true"></div>
+          <div class="seat-card-inner">
+            <span class="seat-label" data-i18n="brunch.svc2k">Second seating</span>
+            <div class="seat-time">12<span class="seat-sep">:</span>15</div>
+            <div class="seat-meta">
+              <span class="seat-spots" data-i18n="brunch.seats">40 places</span>
+              <span class="seat-dot" aria-hidden="true"></span>
+              <span class="seat-dur">2 h 15 min</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="brunch-services" data-reveal data-reveal-delay="1">
-      <div class="svc">
-        <span class="svc-k" data-i18n="brunch.svc1k">First seating</span>
-        <span class="svc-t">10:00</span>
-        <span class="svc-n" data-i18n="brunch.seats">40 places</span>
-      </div>
-      <div class="svc-div" aria-hidden="true"></div>
-      <div class="svc">
-        <span class="svc-k" data-i18n="brunch.svc2k">Second seating</span>
-        <span class="svc-t">12:15</span>
-        <span class="svc-n" data-i18n="brunch.seats">40 places</span>
-      </div>
-    </div>
+    <!-- Right: reservation form -->
+    <div class="brunch-form-wrap">
 
-    <form class="brunch-form" id="brunchForm" novalidate data-reveal data-reveal-delay="2">
+      <form class="brunch-form" id="brunchForm" novalidate>
       <div class="bf-grid">
         <div data-field="bname" class="bf-row">
           <label for="b-name" data-i18n="bform.name">Full name</label>
@@ -1372,8 +1652,9 @@ body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:152px}
       </div>
       <button type="submit" class="btn btn-solid form-submit" data-i18n="bform.submit">Request this table</button>
       <p class="form-status" id="brunchStatus" role="status" aria-live="polite"></p>
-    </form>
-  </div>
+      </form>
+    </div><!-- /brunch-form-wrap -->
+  </div><!-- /brunch-layout -->
 </section>
 
 <section class="section sec-floral" id="floral">
@@ -1626,6 +1907,52 @@ body:has(.sticky-cta.show) .wa-cta,body.ncf-bar .wa-cta{bottom:152px}
     </form>
   </div>
 </section>
+
+<!-- ============ POST-INQUIRY CONFIRMATION ============ -->
+<div class="ncf-confirm-overlay" id="ncf-confirm-overlay" hidden aria-hidden="true">
+  <div class="ncf-confirm-inner">
+    <div class="ncf-confirm-badge" aria-hidden="true">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <circle cx="26" cy="26" r="26" fill="var(--lilac-mist)"/>
+        <path d="M14 26.5l8.5 8.5 16-17" stroke="var(--violet)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 class="ncf-confirm-h"><span class="ncf-confirm-name"></span> your inquiry is on its way.</h2>
+    <p class="ncf-confirm-sub">We received your request and our team will be in touch very soon. Here is what happens next&nbsp;—</p>
+
+    <div class="ncf-steps">
+      <div class="ncf-step">
+        <div class="ncf-step-num" aria-hidden="true">1</div>
+        <div class="ncf-step-body">
+          <h3>We reach out with questions</h3>
+          <p>Within 24–48 hours, a member of our team will contact you by email to learn more about your vision, your guests, and any special requests.</p>
+        </div>
+      </div>
+      <div class="ncf-step">
+        <div class="ncf-step-num" aria-hidden="true">2</div>
+        <div class="ncf-step-body">
+          <h3>We send you a personalised proposal</h3>
+          <p>Once we have everything we need, we prepare a detailed quote and send it to you for review. We discuss every detail until it feels exactly right.</p>
+        </div>
+      </div>
+      <div class="ncf-step">
+        <div class="ncf-step-num" aria-hidden="true">3</div>
+        <div class="ncf-step-body">
+          <h3>We set everything up for you</h3>
+          <p>On your day, we take care of the room, the flowers, and every detail — so you arrive to a space that is already perfect for your celebration.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ncf-confirm-cta">
+      <a class="btn btn-outline" href="https://wa.me/15144373234" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.785.47 3.455 1.29 4.9L2 22l5.237-1.273A9.953 9.953 0 0011.999 22C17.521 22 22 17.523 22 12S17.521 2 11.999 2zm0 18c-1.63 0-3.161-.453-4.47-1.237l-.321-.19-3.108.755.783-2.995-.208-.338A7.966 7.966 0 014 12c0-4.411 3.589-8 8-8 4.41 0 8 3.589 8 8s-3.59 8-8 8z"/></svg>
+        Chat with us on WhatsApp
+      </a>
+      <p class="ncf-confirm-note">Questions before we reply? We are on WhatsApp and usually respond within a few hours.</p>
+    </div>
+  </div>
+</div>
 
 <!-- ============ LOCATION / CONTACT ============ -->
 <section class="section sec-faq" id="faq">
@@ -2589,12 +2916,45 @@ if (!window.NCF_ENDPOINT && location.protocol.indexOf('http') === 0) {
     };
   }
 
+  /* ── Post-submission full-page confirmation ─────────────────────────────── */
+  function showEventConfirmation(firstName){
+    var overlay = document.getElementById('ncf-confirm-overlay');
+    if(!overlay) return;
+    // Personalise the greeting
+    var greet = overlay.querySelector('.ncf-confirm-name');
+    if(greet && firstName){ greet.textContent = firstName + ','; }
+    // Scroll to top of overlay and reveal it
+    overlay.removeAttribute('hidden');
+    overlay.setAttribute('aria-hidden','false');
+    overlay.style.opacity = '0';
+    overlay.style.transform = 'translateY(32px)';
+    setTimeout(function(){
+      overlay.style.transition = 'opacity .55s var(--ease), transform .55s var(--ease)';
+      overlay.style.opacity = '1';
+      overlay.style.transform = 'translateY(0)';
+    }, 20);
+    // Scroll the section into view
+    overlay.scrollIntoView({behavior:'smooth', block:'start'});
+    // Stagger step reveals
+    var steps = overlay.querySelectorAll('.ncf-step');
+    steps.forEach(function(s,i){
+      s.style.opacity = '0'; s.style.transform = 'translateY(24px)';
+      setTimeout(function(){
+        s.style.transition = 'opacity .5s var(--ease), transform .5s var(--ease)';
+        s.style.opacity = '1'; s.style.transform = 'translateY(0)';
+      }, 400 + i * 180);
+    });
+  }
+
   function wire(formId, statusId, okKey, okFb){
     var f = document.getElementById(formId); if(!f) return;
     var box = document.getElementById(statusId);
+    var submitted = false;  // double-submit guard
     f.addEventListener('submit', function(e){
       if(!window.NCF_ENDPOINT) return;        // untouched: the honest fallback runs
+      if(submitted) return;                   // ignore second click while in-flight
       e.preventDefault(); e.stopImmediatePropagation();
+      submitted = true;
       var btn = f.querySelector('[type=submit]'), label = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = '…'; }
 
@@ -2627,8 +2987,15 @@ if (!window.NCF_ENDPOINT && location.protocol.indexOf('http') === 0) {
         return r;
       })
       .then(function(){
-        box.textContent = NF_T(okKey, okFb);
-        box.classList.remove('err'); box.classList.add('show','ok');
+        // Show personalized confirmation overlay
+        var isBrunch = formId === 'brunchForm';
+        var guestName = (lead.name || '').split(' ')[0] || '';
+        if(!isBrunch){
+          showEventConfirmation(guestName);
+        } else {
+          box.textContent = NF_T(okKey, okFb);
+          box.classList.remove('err'); box.classList.add('show','ok');
+        }
         try{ window.dispatchEvent(new CustomEvent('ncf:lead',{detail:lead})); }catch(err){}
         f.reset();
       })
@@ -2643,13 +3010,69 @@ if (!window.NCF_ENDPOINT && location.protocol.indexOf('http') === 0) {
         }
         box.classList.remove('ok'); box.classList.add('show','err');
       })
-      .finally(function(){ if(btn){ btn.disabled = false; btn.textContent = label; } });
+      .finally(function(){
+        // Only re-enable button on error (success keeps form locked to prevent duplicate)
+        var hasErr = box && box.classList.contains('err');
+        if(hasErr){ submitted = false; if(btn){ btn.disabled = false; btn.textContent = label; } }
+      });
     }, true);
   }
   wire('brunchForm','brunchStatus','bform.sent',
        'Thank you — your brunch request has been sent. We will confirm by email.');
   wire('eventForm','formStatus','form.status.sent',
        'Thank you — your enquiry has been sent. We will be in touch shortly.');
+
+  /* ── Dynamic per-section SEO meta (swaps title+description as user scrolls) ── */
+  (function(){
+    var SEO_SECTIONS = [
+      {id:'hero',    title:'Nathan Café Floral — Coffee, Flowers & Private Events · Montréal',
+       desc:'Nathan Café Floral — Montréal's intimate destination for specialty coffee, professional floral services, and private events. Ahuntsic.'},
+      {id:'cafe',    title:'The Café · Specialty Coffee · Nathan Café Floral Montréal',
+       desc:'A warm, light-filled café in Montréal built around specialty coffee. Walk in, slow down, and enjoy something beautifully made.'},
+      {id:'menu',    title:'Coffee Menu · Nathan Café Floral · Montréal',
+       desc:'Our specialty coffee menu — lattes, matcha, americano, cappuccino, and seasonal drinks. Full menu and pricing available in-café.'},
+      {id:'brunch',  title:'Saturday Brunch · Two Seatings · Nathan Café Floral Montréal',
+       desc:'Saturday brunch in Montréal — two intimate seatings at 10:00 and 12:15. 40 places per seating. Reserve your table in advance.'},
+      {id:'floral',  title:'Floral Studio · Professional Florist · Nathan Café Floral Montréal',
+       desc:'A professional floral studio inside Nathan Café Floral. Fresh bouquets for every occasion, full floral design for weddings and events.'},
+      {id:'venue',   title:'Private Events & Weddings · Nathan Café Floral · Montréal',
+       desc:'Host your wedding, engagement, birthday or corporate event at Nathan Café Floral. Up to 50 seated guests in an intimate floral setting in Montréal.'},
+      {id:'gallery', title:'Gallery · A Glimpse Inside Nathan Café Floral · Montréal',
+       desc:'Photos from Nathan Café Floral — the café space, floral arrangements, private events, and intimate celebrations in Montréal.'},
+      {id:'faq',     title:'FAQ · Nathan Café Floral · Private Events & Brunch · Montréal',
+       desc:'Frequently asked questions about private events, Saturday brunch, capacity, catering, and venue hire at Nathan Café Floral in Montréal.'},
+      {id:'contact', title:'Contact · Nathan Café Floral · Montréal',
+       desc:'Get in touch with Nathan Café Floral. Inquire about private events, Saturday brunch reservations, or floral orders. Located in Montréal, Québec.'}
+    ];
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var ogTitle  = document.querySelector('meta[property="og:title"]');
+    var ogDesc   = document.querySelector('meta[property="og:description"]');
+    var twTitle  = document.querySelector('meta[name="twitter:title"]');
+    var twDesc   = document.querySelector('meta[name="twitter:description"]');
+    var metaDesc = document.querySelector('meta[name="description"]');
+    var baseTitle = document.title;
+    if(!('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting) return;
+        var sec = SEO_SECTIONS.find(function(s){ return s.id === en.target.id; });
+        if(!sec) return;
+        document.title = sec.title;
+        if(metaDesc) metaDesc.setAttribute('content', sec.desc);
+        if(ogTitle)  ogTitle.setAttribute('content', sec.title);
+        if(ogDesc)   ogDesc.setAttribute('content', sec.desc);
+        if(twTitle)  twTitle.setAttribute('content', sec.title);
+        if(twDesc)   twDesc.setAttribute('content', sec.desc);
+        if(canonical){
+          var id = en.target.id !== 'hero' ? '#' + en.target.id : '';
+          canonical.setAttribute('href', 'https://nathancafefloral.com/' + id);
+        }
+      });
+    },{threshold:.4});
+    SEO_SECTIONS.forEach(function(s){
+      var el = document.getElementById(s.id); if(el) obs.observe(el);
+    });
+  })();
 
   /* lets the owner test the bridge without waiting for a real visitor */
   window.NCF_sampleLead = function(formId){
