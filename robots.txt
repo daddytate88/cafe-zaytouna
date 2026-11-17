@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /crm
 Disallow: /api
+Allow: /api/health
