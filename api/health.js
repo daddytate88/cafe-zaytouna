@@ -33,6 +33,14 @@ export default async function handler(req, res) {
 
   // surface the shape without revealing anything secret
   out.settings.uses_pooler = url.includes(':6543');
+  // the transaction pooler needs the user to be postgres.<project-ref>.
+  // A plain "postgres" user fails exactly like a wrong password does.
+  var userPart = (url.split('://')[1] || '').split(':')[0] || '';
+  out.settings.user_has_project_ref = /^postgres\.[a-z0-9]{8,}$/i.test(userPart);
+  if (out.settings.uses_pooler && !out.settings.user_has_project_ref) {
+    out.database.note = 'The username in DATABASE_URL should be postgres.<project-ref>, ' +
+      'not plain postgres. Copy the string again from the Transaction pooler tab.';
+  }
   out.settings.host_ends_with = (url.split('@')[1] || '').split(':')[0]?.slice(-28) || null;
   if (!out.settings.uses_pooler) {
     out.database.note = 'That connection string is not the transaction pooler ' +
