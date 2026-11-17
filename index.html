@@ -2610,10 +2610,14 @@ if (!window.NCF_ENDPOINT && location.protocol.indexOf('http') === 0) {
       data.append('ncf_lead', token);
       data.append('ncf_json', JSON.stringify(lead));
 
+      // Always send JSON to our own /api/lead so field names match.
+      // The FormData fallback was kept only for external form-relay services.
+      var isOwnApi = window.NCF_ENDPOINT.indexOf(location.origin) === 0 ||
+                     /\/api\/lead/.test(window.NCF_ENDPOINT);
       fetch(window.NCF_ENDPOINT, {
         method:'POST',
-        body: /json$/.test(window.NCF_ENDPOINT) ? JSON.stringify(lead) : data,
-        headers: /json$/.test(window.NCF_ENDPOINT)
+        body: (isOwnApi || /json$/.test(window.NCF_ENDPOINT)) ? JSON.stringify(lead) : data,
+        headers: (isOwnApi || /json$/.test(window.NCF_ENDPOINT))
           ? {'Content-Type':'application/json','Accept':'application/json'}
           : {'Accept':'application/json'}
       })
