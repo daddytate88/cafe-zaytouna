@@ -196,6 +196,17 @@ export default async function handler(req, res) {
               ? b.status : 'pending']);
           return res.status(200).json({ ok: true });
         }
+        case 'lead.delete': {
+          // delete the lead and all attached rows; contact is kept (may have other leads)
+          await pool.query(`delete from scheduled_jobs   where payload->>'lead_id' = $1`, [b.id]);
+          await pool.query(`delete from owner_notifications where lead_id = $1::uuid`, [b.id]);
+          await pool.query(`delete from lead_activities  where lead_id = $1::uuid`, [b.id]);
+          await pool.query(`delete from lead_answers     where lead_id = $1::uuid`, [b.id]);
+          await pool.query(`delete from event_tasks      where lead_id = $1::uuid`, [b.id]);
+          await pool.query(`delete from events           where lead_id = $1::uuid`, [b.id]);
+          await pool.query(`delete from leads            where id      = $1::uuid`, [b.id]);
+          return res.status(200).json({ ok: true });
+        }
         default:
           return res.status(400).json({ error: 'unknown action' });
       }

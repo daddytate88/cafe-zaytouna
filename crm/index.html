@@ -1050,6 +1050,7 @@ NCF.wireDnD=function(){
 };
 
 NCF.startDrag=function(e, card, touch){
+  e.preventDefault();                        // stops macOS from showing a copy cursor
   const id=card.dataset.id;
   const sx=e.clientX, sy=e.clientY;
   const rect=card.getBoundingClientRect();
@@ -1068,6 +1069,7 @@ NCF.startDrag=function(e, card, touch){
       document.body.appendChild(ghost);
       card.classList.add('dragging');
       document.body.style.userSelect='none';
+      document.body.style.cursor='grabbing';
     }
     ev.preventDefault();
     ghost.style.left=(ev.clientX-ox)+'px';
@@ -1094,6 +1096,7 @@ NCF.startDrag=function(e, card, touch){
     window.removeEventListener('pointerup',up);
     window.removeEventListener('pointercancel',up);
     document.body.style.userSelect='';
+    document.body.style.cursor='';
     if(ghost) ghost.remove();
     card.classList.remove('dragging');
     if(lastCol) lastCol.classList.remove('over');
@@ -1365,10 +1368,17 @@ NCF.saveLead=function(quiet){
   }
   if(!quiet){ toast('Saved'); NCF.render(); NCF.closeDrawer(); }
 };
-NCF.askDelete=function(){
+NCF.askDelete=async function(){
   const l=NCF.store.table('leads').find(x=>x.id===NCF.openId); if(!l) return;
   if(!confirm('Delete this enquiry and everything attached to it? This cannot be undone.')) return;
-  NCF.deleteLead(NCF.openId); NCF.closeDrawer(); NCF.render(); toast('Deleted');
+  if(NCF.api.live){
+    // delete on the server first, then remove locally so a refresh doesn't bring it back
+    const ok = await NCF.act({action:'lead.delete', id:NCF.openId}, null);
+    if(!ok) return; // NCF.act already showed an error toast
+  } else {
+    NCF.deleteLead(NCF.openId);
+  }
+  NCF.closeDrawer(); NCF.render(); toast('Deleted');
 };
 NCF.pushNote=function(){
   const i=$('#noteIn'); if(!i||!i.value.trim()) return;
